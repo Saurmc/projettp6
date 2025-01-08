@@ -32,16 +32,16 @@
                 <div class="container">   
                     <div class="collapse navbar-collapse" id="navbarNav">
                         <ul class="navbar-nav ms-lg-auto">
-                            <li class="nav-item">
-                                <a class="nav-link active" href="index.html">Home</a>
-                            </li>
 
+                            <li class="nav-item">                 
+                                <a class="nav-link" href="{{ path('app_inscription_entreprise') }}">S'inscrire en tant qu'entreprise</a>
+                            </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ path('app_register') }}">S'inscrire</a>
+                                 <a class="nav-link" href="{{ path('app_inscription_dev')}}">S'inscrire en tant que devellopeur</a>
                             </li>
     
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ path('app_login') }}">Se connecter</a>
+                                <a class="nav-link" href="{{ path('app_entrehome_page') }}">Se connecter</a>
                             </li>
                         </ul>
 

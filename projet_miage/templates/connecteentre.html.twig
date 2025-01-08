@@ -3,17 +3,157 @@
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}
-        <link rel="stylesheet" href="style.css"/>
-        {% endblock %}
+       
+         <link rel="preconnect" href="https://fonts.googleapis.com">
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-        {% block javascripts %}
-        {% endblock %}
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400&family=Sono:wght@200;300;400;500;700&display=swap" rel="stylesheet">
+                        
+        <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
+
+        <link rel="stylesheet" href="{{ asset('css/bootstrap-icon.css') }}">
+
+        <link rel="stylesheet" href="{{ asset('css/owl.carousel.min.css') }}">
+        
+        <link rel="stylesheet" href="{{ asset('css/owl.theme.default.min.css') }}">
+
+        <link rel="stylesheet" href="{{ asset('css/templatemo-pod-talk.css') }}">
+
     </head>
+    
     <body>
-        {% block body %}<h1> Bonjour monsieur l'entreprise </h1>
-        
-        
+        {% block body %}
+        <main>
+
+            <nav class="navbar navbar-expand-lg">
+                <div class="container">   
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav ms-lg-auto">
+
+                            <li class="nav-item">                 
+                                <a class="nav-link" href="{{ path('app_inscription_entreprise') }}">S'inscrire en tant qu'entreprise</a>
+                            </li>
+                            <li class="nav-item">
+                                 <a class="nav-link" href="{{ path('app_inscription_dev')}}">S'inscrire en tant que devellopeur</a>
+                            </li>
+    
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ path('app_entrehome_page') }}">Se connecter</a>
+                            </li>
+                        </ul>
+
+                    </div>
+                </div>
+            </nav>
+             <section class="hero-section">
+                <div class="container">
+                    <div class="row">
+
+                        <div class="col-lg-12 col-12">
+                            <div class="text-center mb-5 pb-2">
+                                <h1 class="text-white">Vous cherchez un devellopeur</h1>
+                                <h4 class="section-title">Trouver votre pepite</h4>
+                            </div>
+
+                            <div class="owl-carousel owl-theme">
+                                <div class="owl-carousel-info-wrap item">
+                                    <img src="images/profile/smiling-business-woman-with-folded-hands-against-white-wall-toothy-smile-crossed-arms.jpg" class="owl-carousel-image img-fluid" alt="">
+
+                                    <div class="owl-carousel-info">
+                                        <h4 class="mb-2">
+                                            Entreprise
+                                            <img src="images/verified.png" class="owl-carousel-verified-image img-fluid" alt="">
+                                        </h4>
+
+                                    </div>
+
+
+                                </div>
+
+                                <div class="owl-carousel-info-wrap item">
+                                    <img src="images/profile/handsome-asian-man-listening-music-through-headphones.jpg" class="owl-carousel-image img-fluid" alt="">
+
+                                    <div class="owl-carousel-info">
+                                        <h4 class="mb-2">
+                                            Devellopeur
+                                            <img src="images/verified.png" class="owl-carousel-verified-image img-fluid" alt="">
+                                        </h4>
+
+                                    </div>
+
+                                </div>
+
+                                
+                               
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+
+            
+        </main>
+
+        <footer class="site-footer">   
+            <div class="container">
+                <div class="row">
+
+                    
+
+                    <div class="col-lg-3 col-md-6 col-12 mb-4 mb-md-0 mb-lg-0">
+                        <h6 class="site-footer-title mb-3">Contact</h6>
+
+                        <p class="mb-2"><strong class="d-inline me-2">Phone:</strong> +33 7 22 33 44 55</p>
+
+                        <p>
+                            <strong class="d-inline me-2">Email:</strong>
+                            <a href="#">lesite@gmail.com</a> 
+                        </p>
+                    </div>
+
+                   
+
+                        <h6 class="site-footer-title mb-3">Social</h6>
+
+                        <ul class="social-icon">
+                            <li class="social-icon-item">
+                                <a href="#" class="social-icon-link bi-instagram"></a>
+                            </li>
+
+                            <li class="social-icon-item">
+                                <a href="#" class="social-icon-link bi-twitter"></a>
+                            </li>
+
+                            <li class="social-icon-item">
+                                <a href="#" class="social-icon-link bi-whatsapp"></a>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="container pt-5">
+                <div class="row align-items-center">
+
+
+                    <div class="col-lg-7 col-md-9 col-12">
+                        <ul class="site-footer-links">
+                            <li class="site-footer-link-item">
+                                <a href="#" class="site-footer-link">Homepage</a>
+                            </li>
+
+                        </ul>
+                    </div>
+
+                    
+                </div>
+            </div>
+        </footer>
       
         <a href="{{ path('app_inscription_entreprise') }}">Créer une fiche de poste</a>
         <a href="{{ path('app_logout') }}">Déconnexion</a>
