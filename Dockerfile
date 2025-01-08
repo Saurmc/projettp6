@@ -1,7 +1,7 @@
-# Utiliser l'image PHP 8.1-FPM comme base
-FROM php:8.1-fpm
+# Utiliser l'image PHP 8.2-FPM comme base
+FROM php:8.2-fpm
 
-# Installer les dÃ©pendances nÃ©cessaires
+# Installer les dÃpendances nÃcessaires
 RUN apt-get update && apt-get install -y \
     curl \
     git \
