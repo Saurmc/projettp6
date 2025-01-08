@@ -14,7 +14,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class SearchFilterType extends AbstractType
+class FilterLangageType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
