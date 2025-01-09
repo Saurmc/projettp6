@@ -3,46 +3,68 @@
 namespace App\Controller;
 
 use App\Entity\Developpeur;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
+use App\Entity\Entreprise;
+use App\Form\ConnexionDevType;
+use App\Form\ConnexionEntrepriseType;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use App\Form\ConnexionDeveloppeurType;
 
 class ConnexionController extends AbstractController
 {
-    #[Route('/connexion', name: 'app_connexion', methods:['GET','POST'])]
-    public function index(Request $request, EntityManagerInterface $em, SessionInterface $session): Response
+    #[Route('/connexion/dev', name: 'app_connexion_dev')]
+    public function connexionDev(Request $request, EntityManagerInterface $entityManager, SessionInterface $session): Response
     {
-        $form = $this->createForm(ConnexionDeveloppeurType::class);
+        $form = $this->createForm(ConnexionDevType::class);
         $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
-            $prenom = $data->getPrenom();
-            $nom = $data->getNom();
-            $repository = $em->getRepository(Developpeur::class);
-
-            $user = $repository->findOneBy([
-                'prenom' => $prenom,
-                'nom' => $nom
+            $dev = $entityManager->getRepository(Developpeur::class)->findOneBy([
+                'nom' => $data['nom'],
+                'prenom' => $data['prenom']
             ]);
-            if($user){
+
+            if ($dev) {
+                $session->set('dev_id', $dev->getId());
                 $session->set('dev_is_logged_in', true);
-                return $this->redirectToRoute('app_home_page', [], Response::HTTP_SEE_OTHER);//envoie sur la page comme quoi on est bien connecté
-
-            }else{
-                return $this->redirectToRoute('app_home_page', [
-                    
-                ], Response::HTTP_SEE_OTHER);//envoie sur la page de base si il a rien trouvé
-
+                return $this->redirectToRoute('app_dev_home');
             }
+
+            $this->addFlash('error', 'Identifiants invalides');
         }
 
-        
-        return $this->renderForm('connexion/connexion.html.twig', [
-            'form' => $form,
+        return $this->render('connexion/dev.html.twig', [
+            'form' => $form
+        ]);
+    }
+
+    #[Route('/connexion/entreprise', name: 'app_connexion_entreprise')]
+    public function connexionEntreprise(Request $request, EntityManagerInterface $entityManager, SessionInterface $session): Response
+    {
+        $form = $this->createForm(ConnexionEntrepriseType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $entreprise = $entityManager->getRepository(Entreprise::class)->findOneBy([
+                'nom_entreprise' => $data['nom_entreprise']
+            ]);
+
+            if ($entreprise) {
+                $session->set('entreprise_id', $entreprise->getId());
+                $session->set('entreprise_is_logged_in', true);
+                return $this->redirectToRoute('app_entreprise_home');
+            }
+
+            $this->addFlash('error', 'Identifiants invalides');
+        }
+
+        return $this->render('connexion/entreprise.html.twig', [
+            'form' => $form
         ]);
     }
 }

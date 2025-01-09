@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Profil{% endblock %}
+
+{% block body %}
+<section class="hero-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-12">
+                <div class="text-center mb-5 pb-2">
+                    <h1 class="text-white">Mon Profil</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="contact-section section-padding" id="section_6">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-12 mx-auto">
+                <div class="custom-block bg-white shadow-lg">
+                    <div class="row">
+                        <div class="col-lg-4 col-12">
+                            {% if developpeur.avatar %}
+                                <img src="{{ asset('uploads/avatars/' ~ developpeur.avatar) }}" alt="Photo de profil" class="img-fluid rounded-circle mb-3">
+                            {% else %}
+                                <div class="text-center">
+                                    <i class="bi bi-person-circle" style="font-size: 8rem;"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-lg-8 col-12">
+                            <h3>{{ developpeur.prenom }} {{ developpeur.nom }}</h3>
+                            <p><strong>Localisation:</strong> {{ developpeur.localisation }}</p>
+                            <p><strong>Email:</strong> {{ developpeur.user.email }}</p>
+                            <p><strong>Langage:</strong> {{ developpeur.langage.value }}</p>
+                            <p><strong>Expérience:</strong> {{ developpeur.experience.value }}</p>
+                            <p><strong>Salaire souhaité:</strong> {{ developpeur.salaire }}€</p>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h4>Biographie</h4>
+                            <p>{{ developpeur.biographie ?? 'Aucune biographie renseignée.' }}</p>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <a href="#" class="btn custom-btn">Modifier mon profil</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

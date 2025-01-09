@@ -36,6 +36,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToOne(targetEntity: Developpeur::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
     private ?Developpeur $developpeur = null;
 
+    #[ORM\ManyToOne(targetEntity: Entreprise::class, inversedBy: 'users')]
+    private ?Entreprise $entreprise = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -76,8 +79,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $roles[] = 'ROLE_DEV';
         $roles[] = 'ROLE_ENTREPRISE';
 
-
-
         return array_unique($roles);
     }
 
@@ -107,26 +108,34 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     public function getDeveloppeur(): ?Developpeur
-{
-    return $this->developpeur;
-}
-
-public function setDeveloppeur(?Developpeur $developpeur): self
-{
-    // Vérifie si l'ancien développeur est défini et dissocie l'utilisateur
-    if ($this->developpeur !== null && $this->developpeur !== $developpeur) {
-        $this->developpeur->setUser(null);
+    {
+        return $this->developpeur;
     }
 
-    // Associe le nouvel développeur à cet utilisateur
-    $this->developpeur = $developpeur;
+    public function setDeveloppeur(?Developpeur $developpeur): static
+    {
+        if ($developpeur === null && $this->developpeur !== null) {
+            $this->developpeur->setUser(null);
+        }
 
-    if ($developpeur !== null && $developpeur->getUser() !== $this) {
-        $developpeur->setUser($this);
+        if ($developpeur !== null && $developpeur->getUser() !== $this) {
+            $developpeur->setUser($this);
+        }
+
+        $this->developpeur = $developpeur;
+        return $this;
     }
 
-    return $this;
-}
+    public function getEntreprise(): ?Entreprise
+    {
+        return $this->entreprise;
+    }
+
+    public function setEntreprise(?Entreprise $entreprise): static
+    {
+        $this->entreprise = $entreprise;
+        return $this;
+    }
 
     /**
      * @see UserInterface

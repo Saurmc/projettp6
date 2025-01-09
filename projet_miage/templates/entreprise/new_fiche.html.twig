@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle Offre d'Emploi{% endblock %}
+
+{% block body %}
+<section class="hero-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-12">
+                <div class="text-center mb-5 pb-2">
+                    <h1 class="text-white">Créer une nouvelle offre d'emploi</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="contact-section section-padding" id="section_6">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-12 mx-auto">
+                <div class="custom-block bg-white shadow-lg">
+                    {{ form_start(form, {'attr': {'class': 'custom-form contact-form'}}) }}
+                        <div class="row">
+                            <div class="col-lg-12 col-12">
+                                {{ form_row(form.titre_poste, {
+                                    'attr': {'class': 'form-control'},
+                                    'row_attr': {'class': 'form-group mb-4'}
+                                }) }}
+                            </div>
+
+                            <div class="col-lg-6 col-12">
+                                {{ form_row(form.localisation, {
+                                    'attr': {'class': 'form-control'},
+                                    'row_attr': {'class': 'form-group mb-4'}
+                                }) }}
+                            </div>
+
+                            <div class="col-lg-6 col-12">
+                                {{ form_row(form.salaire, {
+                                    'attr': {'class': 'form-control'},
+                                    'row_attr': {'class': 'form-group mb-4'}
+                                }) }}
+                            </div>
+
+                            <div class="col-lg-6 col-12">
+                                {{ form_row(form.technologie, {
+                                    'attr': {'class': 'form-control'},
+                                    'row_attr': {'class': 'form-group mb-4'}
+                                }) }}
+                            </div>
+
+                            <div class="col-lg-6 col-12">
+                                {{ form_row(form.experience, {
+                                    'attr': {'class': 'form-control'},
+                                    'row_attr': {'class': 'form-group mb-4'}
+                                }) }}
+                            </div>
+
+                            <div class="col-12">
+                                {{ form_row(form.description, {
+                                    'attr': {'class': 'form-control'},
+                                    'row_attr': {'class': 'form-group mb-4'}
+                                }) }}
+                            </div>
+
+                            <div class="col-lg-12 col-12">
+                                <button type="submit" class="btn custom-btn">Publier l'offre</button>
+                                <a href="{{ path('app_entreprise_home') }}" class="btn btn-secondary ms-2">Annuler</a>
+                            </div>
+                        </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

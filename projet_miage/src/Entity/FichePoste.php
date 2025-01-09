@@ -4,13 +4,13 @@ namespace App\Entity;
 
 use App\Enum\ExperienceEnum;
 use App\Enum\LangagesEnum;
-use App\Repository\DeveloppeurRepository;
+use App\Repository\FichePosteRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: DeveloppeurRepository::class)]
+#[ORM\Entity(repositoryClass: FichePosteRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-class Developpeur
+class FichePoste
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -18,32 +18,26 @@ class Developpeur
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $nom = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $prenom = null;
+    private ?string $titre_poste = null;
 
     #[ORM\Column(length: 255)]
     private ?string $localisation = null;
 
-    #[ORM\Column(type: 'string', enumType: LangagesEnum::class, nullable: true)]
-    private ?LangagesEnum $langage = null;
+    #[ORM\Column(type: 'string', enumType: LangagesEnum::class)]
+    private ?LangagesEnum $technologie = null;
 
-    #[ORM\Column(enumType: ExperienceEnum::class, nullable: true)]
+    #[ORM\Column(enumType: ExperienceEnum::class)]
     private ?ExperienceEnum $experience = null;
 
     #[ORM\Column]
     private ?float $salaire = null;
 
-    #[ORM\Column(length: 512, nullable: true)]
-    private ?string $biographie = null;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $description = null;
 
-    #[ORM\Column(length: 512, nullable: true)]
-    private ?string $avatar = null;
-
-    #[ORM\OneToOne(targetEntity: User::class, inversedBy: 'developpeur', cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(inversedBy: 'fichesPoste')]
     #[ORM\JoinColumn(nullable: false)]
-    private User $user;
+    private ?Entreprise $entreprise = null;
 
     #[ORM\Column]
     private int $viewCount = 0;
@@ -54,32 +48,25 @@ class Developpeur
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTime $lastViewed = null;
 
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getNom(): ?string
+    public function getTitrePoste(): ?string
     {
-        return $this->nom;
+        return $this->titre_poste;
     }
 
-    public function setNom(string $nom): static
+    public function setTitrePoste(string $titre_poste): static
     {
-        $this->nom = $nom;
-
-        return $this;
-    }
-
-    public function getPrenom(): ?string
-    {
-        return $this->prenom;
-    }
-
-    public function setPrenom(string $prenom): static
-    {
-        $this->prenom = $prenom;
-
+        $this->titre_poste = $titre_poste;
         return $this;
     }
 
@@ -91,19 +78,17 @@ class Developpeur
     public function setLocalisation(string $localisation): static
     {
         $this->localisation = $localisation;
-
         return $this;
     }
 
-    public function getLangage(): ?LangagesEnum
+    public function getTechnologie(): ?LangagesEnum
     {
-        return $this->langage;
+        return $this->technologie;
     }
 
-    public function setLangage(LangagesEnum $langage): static
+    public function setTechnologie(LangagesEnum $technologie): static
     {
-        $this->langage = $langage;
-
+        $this->technologie = $technologie;
         return $this;
     }
 
@@ -115,7 +100,6 @@ class Developpeur
     public function setExperience(ExperienceEnum $experience): static
     {
         $this->experience = $experience;
-
         return $this;
     }
 
@@ -127,55 +111,29 @@ class Developpeur
     public function setSalaire(float $salaire): static
     {
         $this->salaire = $salaire;
-
         return $this;
     }
 
-    public function getBiographie(): ?string
+    public function getDescription(): ?string
     {
-        return $this->biographie;
+        return $this->description;
     }
 
-    public function setBiographie(?string $biographie): static
+    public function setDescription(string $description): static
     {
-        $this->biographie = $biographie;
-
+        $this->description = $description;
         return $this;
     }
 
-    public function getAvatar(): ?string
+    public function getEntreprise(): ?Entreprise
     {
-        return $this->avatar;
+        return $this->entreprise;
     }
 
-    public function setAvatar(string $avatar): static
+    public function setEntreprise(?Entreprise $entreprise): static
     {
-        $this->avatar = $avatar;
-
+        $this->entreprise = $entreprise;
         return $this;
-    }
-
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
-
-    public function setUser(?User $user): self
-    {
-        $this->user = $user;
-
-        // Assure la relation inverse si nécessaire
-        if ($user !== null && $user->getDeveloppeur() !== $this) {
-            $user->setDeveloppeur($this);
-        }
-
-        return $this;
-    }
-
-    #[ORM\PrePersist]
-    public function setCreatedAtValue(): void
-    {
-        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getViewCount(): int

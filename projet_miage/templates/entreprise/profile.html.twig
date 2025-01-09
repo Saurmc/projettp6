@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profil Entreprise{% endblock %}
+
+{% block body %}
+<section class="hero-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-12">
+                <div class="text-center mb-5 pb-2">
+                    <h1 class="text-white">Profil de l'entreprise</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="contact-section section-padding" id="section_6">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-12 mx-auto">
+                <div class="custom-block bg-white shadow-lg">
+                    <div class="row">
+                        <div class="col-lg-12 col-12">
+                            <h3>{{ entreprise.nomEntreprise }}</h3>
+                            <p><strong>Localisation:</strong> {{ entreprise.localisation }}</p>
+                            <p><strong>Email:</strong> {{ entreprise.users[0].email }}</p>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h4>Description</h4>
+                            <p>{{ entreprise.description }}</p>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <a href="#" class="btn custom-btn">Modifier le profil</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

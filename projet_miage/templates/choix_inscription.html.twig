@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Choisir votre type d'inscription{% endblock %}
+
+{% block body %}
+<section class="hero-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-12">
+                <div class="text-center mb-5 pb-2">
+                    <h1 class="text-white">Choisissez votre type d'inscription</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="contact-section section-padding" id="section_6">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-12 mx-auto">
+                <div class="row">
+                    <div class="col-lg-6 col-12 mb-4">
+                        <div class="custom-block bg-white shadow-lg">
+                            <div class="d-flex flex-column h-100">
+                                <h5 class="mb-3">Développeur</h5>
+                                <p>Vous êtes développeur et vous cherchez de nouvelles opportunités ?</p>
+                                <div class="mt-auto">
+                                    <a href="{{ path('app_inscription_dev') }}" class="btn custom-btn mt-2 mt-lg-3">S'inscrire comme développeur</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 col-12 mb-4">
+                        <div class="custom-block bg-white shadow-lg">
+                            <div class="d-flex flex-column h-100">
+                                <h5 class="mb-3">Entreprise</h5>
+                                <p>Vous représentez une entreprise et vous recherchez des talents ?</p>
+                                <div class="mt-auto">
+                                    <a href="{{ path('app_inscription_entreprise') }}" class="btn custom-btn mt-2 mt-lg-3">S'inscrire comme entreprise</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,121 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Espace Entreprise{% endblock %}
+
+{% block body %}
+<section class="hero-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-12">
+                <div class="text-center mb-5 pb-2">
+                    <h1 class="text-white">Bienvenue {{ entreprise.nomEntreprise }}</h1>
+                    <p class="text-white">Gérez vos offres d'emploi et trouvez les meilleurs développeurs</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="projects-section section-padding" id="section_4">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-12 mx-auto">
+                <div class="section-title-wrap mb-5">
+                    <h2 class="section-title">Mes Offres d'Emploi</h2>
+                    <div class="section-title-bottom">
+                        <span class="section-title-line"></span>
+                        <span class="section-title-line"></span>
+                        <span class="section-title-line"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 mb-4">
+                <div class="text-center">
+                    <a href="{{ path('app_entreprise_new_fiche') }}" class="btn custom-btn">Créer une nouvelle offre</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row projects-row">
+            {% if fiches_poste is empty %}
+                <div class="col-12">
+                    <div class="alert alert-info" role="alert">
+                        Vous n'avez pas encore publié d'offres d'emploi.
+                    </div>
+                </div>
+            {% else %}
+                {% for fiche in fiches_poste %}
+                    <div class="col-lg-4 col-12 mb-4">
+                        <div class="custom-block bg-white shadow-lg">
+                            <div class="d-flex flex-column h-100">
+                                <div class="custom-block-info">
+                                    <h5 class="mb-2">{{ fiche.titre }}</h5>
+                                    <p class="mb-0">{{ fiche.description|slice(0, 100) }}...</p>
+                                    <div class="mt-3">
+                                        <span class="badge bg-primary me-2">{{ fiche.langage.value }}</span>
+                                        <span class="badge bg-secondary">{{ fiche.experience.value }}</span>
+                                    </div>
+                                    <div class="mt-3">
+                                        <a href="#" class="btn custom-btn mt-2 mt-lg-3">Modifier</a>
+                                        <form method="post" action="#" style="display: inline;">
+                                            <button type="submit" class="btn btn-danger mt-2 mt-lg-3 ms-2" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette offre ?')">Supprimer</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<section class="contact-section section-padding" id="section_5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-12 mx-auto">
+                <div class="section-title-wrap mb-5">
+                    <h2 class="section-title">Mon Entreprise</h2>
+                    <div class="section-title-bottom">
+                        <span class="section-title-line"></span>
+                        <span class="section-title-line"></span>
+                        <span class="section-title-line"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6 col-12">
+                <div class="custom-block bg-white shadow-lg">
+                    <div class="d-flex flex-column h-100">
+                        <div class="custom-block-info">
+                            <h5 class="mb-3">Informations</h5>
+                            <p><strong>Nom:</strong> {{ entreprise.nomEntreprise }}</p>
+                            <p><strong>Localisation:</strong> {{ entreprise.localisation }}</p>
+                            <div class="mt-3">
+                                <a href="{{ path('app_entreprise_profile') }}" class="btn custom-btn mt-2 mt-lg-3">Modifier le profil</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 col-12">
+                <div class="custom-block bg-white shadow-lg">
+                    <div class="d-flex flex-column h-100">
+                        <div class="custom-block-info">
+                            <h5 class="mb-3">Description</h5>
+                            <p>{{ entreprise.description }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
