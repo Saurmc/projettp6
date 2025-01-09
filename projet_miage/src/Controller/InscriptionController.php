@@ -34,9 +34,8 @@ class InscriptionController extends AbstractController
             $dev->setLangage($langage);
             $exp = $form->get('experience')->getData();
             $dev->setExperience($exp); // pareil ici j'ai bien galère
-            $userid = $session->get('user_id'); // Lier le développeur à l'utilisateur
-            $dev->setUser($userid);
-            
+            $user_id = $session->get('user_id');
+            $dev -> setUser_id($user_id);
             $em->persist($dev);
             $em->flush();
             $session->set('dev_is_logged_in', true);

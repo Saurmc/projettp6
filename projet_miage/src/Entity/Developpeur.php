@@ -16,7 +16,7 @@ class Developpeur
     #[ORM\Column]
     private ?int $id = null;
 
-    
+    private ?int $user_id = null;
 
    
 
@@ -51,6 +51,18 @@ class Developpeur
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getUser_Id(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setUser_id(int $user_id): static
+    {
+        $this->user_id = $user_id;
+
+        return $this;
     }
 
 

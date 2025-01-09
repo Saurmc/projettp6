@@ -32,12 +32,12 @@ class RegistrationController extends AbstractController
 
             // encode the plain password
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
-            $session->set('user_id', $user->getId());
 
             $entityManager->persist($user);
             $entityManager->flush();
             $security->login($user, AuthentificationAuthenticator::class, 'main');
             // do anything else you need here, like send an email
+            $session->set('user_id', $user->getId());
 
             return $this->redirectToRoute('app_choixinscription_page', [], Response::HTTP_SEE_OTHER);
 
