@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Entreprise;
 use App\Entity\FicheDePoste;
 use App\Form\FicheDePosteType;
 use App\Repository\DevRepository;
@@ -36,7 +37,7 @@ class EntrepriseDashboardController extends AbstractController
     #[Route('/profile', name: 'entreprise_profile')]
     public function profile(): Response
     {
-        /** @var \App\Entity\Entreprise $entreprise */
+        /** @var Entreprise $entreprise */
         $entreprise = $this->getUser();
         
         return $this->render('entreprise/profile.html.twig', [
@@ -113,28 +114,33 @@ class EntrepriseDashboardController extends AbstractController
         ]);
     }
 
-    #[Route('/fiche-poste/{id}/delete', name: 'fiche_poste_delete', methods: ['POST'])]
-    public function deleteFichePoste(Request $request, FicheDePoste $ficheDePoste, EntityManagerInterface $entityManager): Response
+    #[Route('/fiche-poste/{id}/delete', name: 'entreprise_fiche_poste_delete', methods: ['POST'])]
+    public function deleteFichePoste(FicheDePoste $ficheDePoste, EntityManagerInterface $entityManager): Response
     {
-        // Vérifier que l'entreprise connectée est bien propriétaire de la fiche
+        // Vérifier que l'entreprise est propriétaire de la fiche
         if ($ficheDePoste->getEntreprise() !== $this->getUser()) {
-            throw $this->createAccessDeniedException('Vous n\'avez pas accès à cette fiche de poste.');
+            throw $this->createAccessDeniedException();
         }
 
-        if ($this->isCsrfTokenValid('delete'.$ficheDePoste->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($ficheDePoste);
-            $entityManager->flush();
+        // Récupérer l'entreprise et la typer correctement
+        /** @var Entreprise $entreprise */
+        $entreprise = $this->getUser();
+        
+        // Supprimer la fiche de poste de la collection de l'entreprise
+        $entreprise->removeFicheDePoste($ficheDePoste);
+        
+        // Supprimer la fiche de poste de la base de données
+        $entityManager->remove($ficheDePoste);
+        $entityManager->flush();
 
-            $this->addFlash('success', 'L\'offre d\'emploi a été supprimée avec succès.');
-        }
-
+        $this->addFlash('success', 'L\'offre d\'emploi a été supprimée avec succès.');
         return $this->redirectToRoute('entreprise_dashboard');
     }
 
     #[Route('/about', name: 'entreprise_about')]
     public function about(): Response
     {
-        /** @var \App\Entity\Entreprise $entreprise */
+        /** @var Entreprise $entreprise */
         $entreprise = $this->getUser();
         
         return $this->render('entreprise/about.html.twig', [
