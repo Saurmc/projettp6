@@ -1,0 +1,39 @@
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+
+# Entreprise routes
+entreprise_dashboard:
+    path: /entreprise/dashboard
+    controller: App\Controller\EntrepriseDashboardController::index
+
+entreprise_profile_edit:
+    path: /entreprise/profile/edit
+    controller: App\Controller\EntrepriseDashboardController::profile
+
+fiche_poste_new:
+    path: /entreprise/fiche-poste/new
+    controller: App\Controller\EntrepriseDashboardController::newFichePoste
+
+fiche_poste_edit:
+    path: /entreprise/fiche-poste/{id}/edit
+    controller: App\Controller\EntrepriseDashboardController::editFichePoste
+
+fiche_poste_show:
+    path: /entreprise/fiche-poste/{id}
+    controller: App\Controller\FicheDePosteController::show
+
+fiche_poste_delete:
+    path: /entreprise/fiche-poste/{id}/delete
+    controller: App\Controller\FicheDePosteController::delete
+    methods: [POST]
+
+entreprise_about:
+    path: /entreprise/about
+    controller: App\Controller\EntrepriseDashboardController::about
+
+about_us:
+    path: /about
+    controller: App\Controller\HomeController::about

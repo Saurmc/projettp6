@@ -1,0 +1,75 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription Développeur - AdopteUnDev{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h1 class="h3 mb-0">Inscription Développeur</h1>
+                    </div>
+                    <div class="card-body">
+                        {{ form_start(registrationForm) }}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    {{ form_row(registrationForm.nom) }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    {{ form_row(registrationForm.prenom) }}
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form_row(registrationForm.email) }}
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form_row(registrationForm.localisation) }}
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">{{ form_label(registrationForm.langages) }}</label>
+                                <div class="row">
+                                    {% for language in registrationForm.langages %}
+                                        <div class="col-md-4 mb-2">
+                                            <div class="form-check">
+                                                {{ form_widget(language, {'attr': {'class': 'form-check-input'}}) }}
+                                                {{ form_label(language, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form_row(registrationForm.niveauExperience, {
+                                    'attr': {'class': 'form-select'}
+                                }) }}
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form_row(registrationForm.salaireMinimum) }}
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form_row(registrationForm.biographie) }}
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form_row(registrationForm.avatar) }}
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form_row(registrationForm.plainPassword) }}
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100">Créer mon compte développeur</button>
+                        {{ form_end(registrationForm) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
