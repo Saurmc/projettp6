@@ -38,11 +38,11 @@ php bin/console doctrine:fixtures:load --no-interaction
 ```
 
 ## Accès à l'application
+En tant que dev : email : sarah.dupont@dev.com | mdp : password123
+En tant qu'entreprise : email : contact@innovtech.fr | mdp : password123
 
-- **Développeurs de test** :
-  - Email : sophie.martin@dev.com (et autres)
-  - Mot de passe : password123
-
-- **Entreprises de test** :
-  - Email : contact@techinnov.fr (et autres)
-  - Mot de passe : password123
+## Etudiants ayant réalisé ce projet : 
+- Rahou Rabah
+- Lavallee Mathieu
+- Hammouche Gabriel
+- Declaude Marcus
