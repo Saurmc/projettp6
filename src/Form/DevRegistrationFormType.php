@@ -7,19 +7,20 @@ use App\Entity\Competence;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Range;
+use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class DevRegistrationFormType extends AbstractType
 {
@@ -28,67 +29,58 @@ class DevRegistrationFormType extends AbstractType
         $builder
             ->add('email', EmailType::class, [
                 'label' => 'Email',
-                'attr' => ['placeholder' => 'exemple@email.com']
-            ])
-            ->add('nom', TextType::class, [
-                'label' => 'Nom',
-                'attr' => ['placeholder' => 'Votre nom']
-            ])
-            ->add('prenom', TextType::class, [
-                'label' => 'Prénom',
-                'attr' => ['placeholder' => 'Votre prénom']
-            ])
-            ->add('localisation', TextType::class, [
-                'label' => 'Localisation',
-                'attr' => ['placeholder' => 'Ville, Pays']
-            ])
-            ->add('langages', ChoiceType::class, [
-                'label' => 'Langages de programmation',
-                'choices' => [
-                    'PHP' => 'PHP',
-                    'JavaScript' => 'JavaScript',
-                    'Python' => 'Python',
-                    'Java' => 'Java',
-                    'C#' => 'C#',
-                    'Ruby' => 'Ruby',
-                    'C++' => 'C++',
-                    'Swift' => 'Swift',
-                    'Go' => 'Go'
-                ],
-                'multiple' => true,
-                'expanded' => true
-            ])
-            ->add('niveauExperience', ChoiceType::class, [
-                'label' => 'Niveau d\'expérience',
-                'choices' => [
-                    'Débutant (0-2 ans)' => 1,
-                    'Intermédiaire (2-5 ans)' => 2,
-                    'Avancé (5-8 ans)' => 3,
-                    'Expert (8+ ans)' => 4
-                ]
-            ])
-            ->add('salaireMinimum', NumberType::class, [
-                'label' => 'Salaire minimum souhaité (€/an)',
-                'attr' => ['placeholder' => '35000'],
+                'attr' => ['placeholder' => 'exemple@email.com'],
                 'constraints' => [
-                    new Range([
-                        'min' => 20000,
-                        'max' => 150000,
-                        'notInRangeMessage' => 'Le salaire doit être compris entre {{ min }}€ et {{ max }}€'
+                    new NotBlank([
+                        'message' => 'Ce champ est requis'
+                    ]),
+                    new Email([
+                        'message' => 'Email invalide'
                     ])
                 ]
             ])
-            ->add('biographie', TextareaType::class, [
-                'label' => 'Biographie',
-                'attr' => [
-                    'placeholder' => 'Parlez-nous de vous, de votre parcours et de vos aspirations...',
-                    'rows' => 5
+            ->add('nom', TextType::class, [
+                'label' => 'Nom',
+                'attr' => ['placeholder' => 'Votre nom'],
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Ce champ est requis'
+                    ]),
+                    new Length([
+                        'min' => 2,
+                        'max' => 50,
+                        'minMessage' => 'Minimum {{ limit }} caractères',
+                        'maxMessage' => 'Maximum {{ limit }} caractères'
+                    ])
                 ]
             ])
-            ->add('avatar', UrlType::class, [
-                'label' => 'URL de votre avatar',
-                'required' => false,
-                'attr' => ['placeholder' => 'https://exemple.com/votre-avatar.jpg']
+            ->add('prenom', TextType::class, [
+                'label' => 'Prénom',
+                'attr' => ['placeholder' => 'Votre prénom'],
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Ce champ est requis'
+                    ]),
+                    new Length([
+                        'min' => 2,
+                        'max' => 50,
+                        'minMessage' => 'Minimum {{ limit }} caractères',
+                        'maxMessage' => 'Maximum {{ limit }} caractères'
+                    ])
+                ]
+            ])
+            ->add('localisation', TextType::class, [
+                'label' => 'Localisation',
+                'attr' => ['placeholder' => 'Ville, Pays'],
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Ce champ est requis'
+                    ]),
+                    new Length([
+                        'max' => 100,
+                        'maxMessage' => 'Maximum {{ limit }} caractères'
+                    ])
+                ]
             ])
             ->add('competences', EntityType::class, [
                 'class' => Competence::class,
@@ -107,7 +99,73 @@ class DevRegistrationFormType extends AbstractType
                     'class' => 'select2',
                     'data-placeholder' => 'Sélectionnez vos compétences'
                 ],
-                'label' => 'Compétences'
+                'label' => 'Compétences',
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Sélectionnez au moins une compétence'
+                    ])
+                ]
+            ])
+            ->add('niveauExperience', ChoiceType::class, [
+                'label' => 'Niveau d\'expérience',
+                'choices' => [
+                    'Junior (0-2 ans)' => 1,
+                    'Intermédiaire (2-5 ans)' => 2,
+                    'Senior (5+ ans)' => 3
+                ],
+                'attr' => ['class' => 'form-select'],
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Ce champ est requis'
+                    ])
+                ]
+            ])
+            ->add('salaireMinimum', NumberType::class, [
+                'label' => 'Salaire minimum annuel (€)',
+                'attr' => [
+                    'placeholder' => 'Ex: 35000',
+                    'min' => '15000',
+                    'step' => '1000'
+                ],
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Ce champ est requis'
+                    ]),
+                    new Range([
+                        'min' => 15000,
+                        'max' => 300000,
+                        'notInRangeMessage' => 'Doit être entre {{ min }}€ et {{ max }}€'
+                    ])
+                ]
+            ])
+            ->add('biographie', TextareaType::class, [
+                'label' => 'Biographie',
+                'attr' => [
+                    'placeholder' => 'Décrivez brièvement votre parcours et vos expériences (minimum 10 caractères)',
+                    'rows' => 5
+                ],
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Ce champ est requis'
+                    ]),
+                    new Length([
+                        'min' => 10,
+                        'max' => 1000,
+                        'minMessage' => 'Minimum {{ limit }} caractères',
+                        'maxMessage' => 'Maximum {{ limit }} caractères'
+                    ])
+                ]
+            ])
+            ->add('avatar', TextType::class, [
+                'label' => 'URL de votre avatar',
+                'required' => false,
+                'attr' => ['placeholder' => 'https://exemple.com/votre-avatar.jpg'],
+                'constraints' => [
+                    new Length([
+                        'max' => 255,
+                        'maxMessage' => 'Maximum {{ limit }} caractères'
+                    ])
+                ]
             ])
             ->add('plainPassword', PasswordType::class, [
                 'mapped' => false,
@@ -115,14 +173,14 @@ class DevRegistrationFormType extends AbstractType
                 'attr' => ['placeholder' => 'Choisissez un mot de passe sécurisé'],
                 'constraints' => [
                     new NotBlank([
-                        'message' => 'Veuillez entrer un mot de passe',
+                        'message' => 'Ce champ est requis',
                     ]),
                     new Length([
                         'min' => 6,
-                        'minMessage' => 'Votre mot de passe doit contenir au moins {{ limit }} caractères',
+                        'minMessage' => 'Minimum {{ limit }} caractères',
                         'max' => 4096,
                     ]),
-                ],
+                ]
             ])
         ;
     }

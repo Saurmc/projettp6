@@ -2,74 +2,407 @@
 
 {% block title %}Inscription Développeur - AdopteUnDev{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .competences-section {
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .competences-header {
+            background-color: #4285f4;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .competences-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .btn-ajouter-competence {
+            background-color: #fff;
+            color: #4285f4;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .btn-ajouter-competence:hover {
+            background-color: #f8f9fa;
+            transform: translateY(-1px);
+        }
+
+        .competence-row {
+            padding: 1rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            background-color: #f8f9fa;
+            margin: 0.5rem;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
+        }
+
+        .competence-row .form-group {
+            flex-grow: 1;
+            margin: 0;
+        }
+
+        .btn-supprimer {
+            background-color: #fff;
+            color: #dc3545;
+            border: 1px solid #dc3545;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-supprimer:hover {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        .competences-error {
+            margin: 0.5rem;
+            border-radius: 4px;
+        }
+
+        .btn-submit {
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 4px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            margin-top: 1rem;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            background-color: #3367d6;
+        }
+
+        .btn-submit:disabled {
+            background-color: #b3b3b3;
+            cursor: not-allowed;
+        }
+
+        .form-select {
+            padding: 0.5rem;
+            border-radius: 4px;
+            border: 1px solid #ced4da;
+        }
+
+        .form-select:focus {
+            border-color: #4285f4;
+            box-shadow: 0 0 0 0.2rem rgba(66, 133, 244, 0.25);
+        }
+
+        .required::after {
+            content: " *";
+            color: red;
+        }
+        .invalid-feedback {
+            display: block;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
-    <div class="container">
+    <div class="container py-5">
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        {% if not registrationForm.vars.valid %}
+            <div class="alert alert-danger">
+                {{ form_errors(registrationForm) }}
+            </div>
+        {% endif %}
+
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header">
+                <div class="card shadow">
+                    <div class="card-header py-3">
                         <h1 class="h3 mb-0">Inscription Développeur</h1>
                     </div>
                     <div class="card-body">
-                        {{ form_start(registrationForm) }}
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    {{ form_row(registrationForm.nom) }}
+                        {{ form_start(registrationForm, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                            <div class="alert alert-danger d-none" id="form-errors">
+                                Veuillez corriger les erreurs suivantes :
+                                <ul class="mb-0"></ul>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    {{ form_row(registrationForm.prenom, {
+                                        'attr': {
+                                            'class': 'form-control',
+                                            'placeholder': 'Votre prénom'
+                                        },
+                                        'label_attr': {
+                                            'class': 'required'
+                                        }
+                                    }) }}
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    {{ form_row(registrationForm.prenom) }}
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
-                                {{ form_row(registrationForm.email) }}
-                            </div>
-
-                            <div class="mb-3">
-                                {{ form_row(registrationForm.localisation) }}
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">{{ form_label(registrationForm.langages) }}</label>
-                                <div class="row">
-                                    {% for language in registrationForm.langages %}
-                                        <div class="col-md-4 mb-2">
-                                            <div class="form-check">
-                                                {{ form_widget(language, {'attr': {'class': 'form-check-input'}}) }}
-                                                {{ form_label(language, null, {'label_attr': {'class': 'form-check-label'}}) }}
-                                            </div>
-                                        </div>
-                                    {% endfor %}
+                                <div class="col-md-6">
+                                    {{ form_row(registrationForm.nom, {
+                                        'attr': {
+                                            'class': 'form-control',
+                                            'placeholder': 'Votre nom'
+                                        },
+                                        'label_attr': {
+                                            'class': 'required'
+                                        }
+                                    }) }}
                                 </div>
                             </div>
 
                             <div class="mb-3">
-                                {{ form_row(registrationForm.niveauExperience, {
-                                    'attr': {'class': 'form-select'}
+                                {{ form_row(registrationForm.email, {
+                                    'attr': {
+                                        'class': 'form-control',
+                                        'placeholder': 'exemple@email.com'
+                                    },
+                                    'label_attr': {
+                                        'class': 'required'
+                                    }
                                 }) }}
                             </div>
 
                             <div class="mb-3">
-                                {{ form_row(registrationForm.salaireMinimum) }}
+                                {{ form_row(registrationForm.plainPassword, {
+                                    'attr': {
+                                        'class': 'form-control',
+                                        'minlength': '6',
+                                        'id': 'password'
+                                    },
+                                    'label_attr': {
+                                        'class': 'required'
+                                    }
+                                }) }}
                             </div>
 
                             <div class="mb-3">
-                                {{ form_row(registrationForm.biographie) }}
+                                <label for="confirmPassword" class="form-label required">Confirmez le mot de passe</label>
+                                <input type="password" 
+                                       id="confirmPassword" 
+                                       class="form-control" 
+                                       required 
+                                       minlength="6"
+                                       oninput="validatePassword(this)">
+                                <div class="invalid-feedback">
+                                    Les mots de passe ne correspondent pas
+                                </div>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    {{ form_row(registrationForm.localisation, {
+                                        'attr': {
+                                            'class': 'form-control',
+                                            'placeholder': 'Ville, Pays'
+                                        },
+                                        'label_attr': {
+                                            'class': 'required'
+                                        }
+                                    }) }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form_row(registrationForm.niveauExperience, {
+                                        'attr': {
+                                            'class': 'form-select'
+                                        },
+                                        'label_attr': {
+                                            'class': 'required'
+                                        }
+                                    }) }}
+                                </div>
                             </div>
 
                             <div class="mb-3">
-                                {{ form_row(registrationForm.avatar) }}
+                                {{ form_row(registrationForm.salaireMinimum, {
+                                    'label': 'Salaire minimum annuel (€)',
+                                    'attr': {
+                                        'class': 'form-control',
+                                        'placeholder': 'Ex: 35000',
+                                        'min': '0',
+                                        'step': '1000'
+                                    },
+                                    'help': 'Indiquez votre salaire minimum annuel brut en euros',
+                                    'label_attr': {
+                                        'class': 'required'
+                                    }
+                                }) }}
                             </div>
 
                             <div class="mb-3">
-                                {{ form_row(registrationForm.plainPassword) }}
+                                {{ form_row(registrationForm.biographie, {
+                                    'attr': {
+                                        'class': 'form-control',
+                                        'rows': 5,
+                                        'placeholder': 'Parlez-nous de vous, de votre parcours et de vos expériences...'
+                                    },
+                                    'label_attr': {
+                                        'class': 'required'
+                                    }
+                                }) }}
                             </div>
 
-                            <button type="submit" class="btn btn-primary w-100">Créer mon compte développeur</button>
+                            <div class="mb-3">
+                                {{ form_row(registrationForm.avatar, {
+                                    'attr': {
+                                        'class': 'form-control',
+                                        'placeholder': 'https://exemple.com/votre-avatar.jpg'
+                                    }
+                                }) }}
+                            </div>
+
+                            <div class="competences-section mb-4">
+                                <div class="competences-header">
+                                    <h3>Compétences</h3>
+                                    <button type="button" class="btn-ajouter-competence">
+                                        <i class="fas fa-plus"></i>
+                                        Ajouter une compétence
+                                    </button>
+                                </div>
+                                <div class="p-3">
+                                    {{ form_widget(registrationForm.competences, {
+                                        'attr': {
+                                            'class': 'form-select',
+                                            'style': 'display: none;'
+                                        }
+                                    }) }}
+                                    <div id="competences-error" class="alert alert-danger mt-2" style="display: none;">
+                                        Veuillez ajouter au moins une compétence
+                                    </div>
+                                    <div class="competences-list">
+                                        <!-- Les compétences seront ajoutées ici dynamiquement -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn-submit">
+                                <i class="fas fa-user-plus"></i>
+                                S'inscrire
+                            </button>
                         {{ form_end(registrationForm) }}
                     </div>
                 </div>
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const competencesList = document.querySelector('.competences-list');
+            const btnAjouter = document.querySelector('.btn-ajouter-competence');
+            const hiddenSelect = document.querySelector('#registration_form_competences');
+            const form = document.querySelector('form');
+            const competencesError = document.querySelector('#competences-error');
+
+            function addCompetenceRow() {
+                const row = document.createElement('div');
+                row.className = 'competence-row';
+                row.innerHTML = `
+                    <div class="form-group flex-grow-1">
+                        <select class="form-select competence-select">
+                            <option value="">Choisir une compétence</option>
+                            {% for group in registrationForm.competences.vars.choices %}
+                                {% if group.choices is defined %}
+                                    <optgroup label="{{ group.label }}">
+                                        {% for choice in group.choices %}
+                                            <option value="{{ choice.value }}">{{ choice.label }}</option>
+                                        {% endfor %}
+                                    </optgroup>
+                                {% else %}
+                                    <option value="{{ group.value }}">{{ group.label }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-outline-danger btn-supprimer">
+                        <i class="fas fa-trash me-1"></i>Supprimer
+                    </button>
+                `;
+                
+                competencesList.appendChild(row);
+
+                const select = row.querySelector('.competence-select');
+                select.addEventListener('change', updateHiddenSelect);
+
+                const btnSupprimer = row.querySelector('.btn-supprimer');
+                btnSupprimer.addEventListener('click', () => {
+                    row.remove();
+                    updateHiddenSelect();
+                });
+            }
+
+            function updateHiddenSelect() {
+                const selectedValues = [];
+                document.querySelectorAll('.competence-select').forEach(select => {
+                    if (select.value) {
+                        selectedValues.push(select.value);
+                    }
+                });
+
+                // Mettre à jour le select caché
+                Array.from(hiddenSelect.options).forEach(option => {
+                    option.selected = selectedValues.includes(option.value);
+                });
+
+                // Afficher/masquer le message d'erreur
+                competencesError.style.display = selectedValues.length === 0 ? 'block' : 'none';
+            }
+
+            btnAjouter.addEventListener('click', addCompetenceRow);
+
+            form.addEventListener('submit', function(e) {
+                const selectedCompetences = Array.from(hiddenSelect.selectedOptions);
+                
+                if (selectedCompetences.length === 0) {
+                    e.preventDefault();
+                    competencesError.style.display = 'block';
+                    competencesError.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+
+            // Ajouter une première ligne de compétence au chargement
+            addCompetenceRow();
+        });
+
+        function validatePassword(input) {
+            const password = document.getElementById('password');
+            if (input.value !== password.value) {
+                input.setCustomValidity('Les mots de passe ne correspondent pas');
+            } else {
+                input.setCustomValidity('');
+            }
+        }
+    </script>
 {% endblock %}

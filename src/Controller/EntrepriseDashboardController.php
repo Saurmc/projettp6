@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Entreprise;
 use App\Entity\FicheDePoste;
+use App\Form\EntrepriseProfileType;
 use App\Form\FicheDePosteType;
 use App\Repository\DevRepository;
 use App\Repository\FicheDePosteRepository;
@@ -13,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 #[Route('/entreprise')]
 #[IsGranted('ROLE_ENTREPRISE')]
@@ -42,6 +44,45 @@ class EntrepriseDashboardController extends AbstractController
         
         return $this->render('entreprise/profile.html.twig', [
             'entreprise' => $entreprise,
+        ]);
+    }
+
+    #[Route('/profile/edit', name: 'entreprise_profile_edit', methods: ['GET', 'POST'])]
+    public function editProfile(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        /** @var Entreprise $entreprise */
+        $entreprise = $this->getUser();
+        $form = $this->createForm(EntrepriseProfileType::class, $entreprise);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Handle logo upload if present
+            $logoFile = $form->get('logo')->getData();
+            if ($logoFile) {
+                $originalFilename = pathinfo($logoFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $newFilename = $originalFilename.'-'.uniqid().'.'.$logoFile->guessExtension();
+
+                try {
+                    $logoFile->move(
+                        $this->getParameter('logos_directory'),
+                        $newFilename
+                    );
+                    // Update the logo path in the entity
+                    $entreprise->setLogo($newFilename);
+                } catch (FileException $e) {
+                    $this->addFlash('error', 'Une erreur est survenue lors du téléchargement du logo');
+                }
+            }
+
+            $entityManager->flush();
+            $this->addFlash('success', 'Votre profil a été mis à jour avec succès.');
+
+            return $this->redirectToRoute('entreprise_profile');
+        }
+
+        return $this->render('entreprise/edit_profile.html.twig', [
+            'form' => $form->createView(),
+            'entreprise' => $entreprise
         ]);
     }
 

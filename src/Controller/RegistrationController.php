@@ -23,24 +23,31 @@ class RegistrationController extends AbstractController
         $form = $this->createForm(DevRegistrationFormType::class, $dev);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            // encode the plain password
-            $dev->setPassword(
-                $userPasswordHasher->hashPassword(
-                    $dev,
-                    $form->get('plainPassword')->getData()
-                )
-            );
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                // encode the plain password
+                $dev->setPassword(
+                    $userPasswordHasher->hashPassword(
+                        $dev,
+                        $form->get('plainPassword')->getData()
+                    )
+                );
 
-            try {
-                $entityManager->persist($dev);
-                $entityManager->flush();
+                try {
+                    $entityManager->persist($dev);
+                    $entityManager->flush();
 
-                $this->addFlash('success', 'Votre compte développeur a été créé avec succès !');
-                return $this->redirectToRoute('app_home');
-            } catch (UniqueConstraintViolationException $e) {
-                $this->addFlash('error', 'Cette adresse email est déjà utilisée. Veuillez vous connecter ou utiliser une autre adresse.');
-                return $this->redirectToRoute('app_login');
+                    $this->addFlash('success', 'Inscription réussie ! Bienvenue sur AdopteUnDev.');
+                    return $this->redirectToRoute('dev_dashboard');
+                } catch (\Exception $e) {
+                    $this->addFlash('error', 'Erreur lors de l\'inscription : ' . $e->getMessage());
+                    return $this->redirectToRoute('register_dev');
+                }
+            } else {
+                // Afficher les erreurs de validation
+                foreach ($form->getErrors(true) as $error) {
+                    $this->addFlash('error', $error->getMessage());
+                }
             }
         }
 

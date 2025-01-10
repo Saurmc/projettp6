@@ -6,32 +6,43 @@ use App\Repository\DevRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: DevRepository::class)]
 class Dev extends User
 {
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Ce champ est requis')]
+    #[Assert\Length(min: 2, max: 255)]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Ce champ est requis')]
+    #[Assert\Length(min: 2, max: 255)]
     private ?string $prenom = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Ce champ est requis')]
     private ?string $localisation = null;
 
-    #[ORM\Column(type: 'json')]
-    private array $langages = [];
-
     #[ORM\Column]
+    #[Assert\NotBlank(message: 'Ce champ est requis')]
+    #[Assert\Range(min: 1, max: 3)]
     private ?int $niveauExperience = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(message: 'Ce champ est requis')]
+    #[Assert\Range(min: 15000, max: 300000)]
     private ?float $salaireMinimum = null;
 
     #[ORM\Column(type: 'text')]
+    #[Assert\NotBlank(message: 'Ce champ est requis')]
+    #[Assert\Length(min: 10, max: 1000, minMessage: 'Minimum {{ limit }} caractères')]
     private ?string $biographie = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Url(message: 'L\'URL n\'est pas valide')]
+    #[Assert\Length(max: 255)]
     private ?string $avatar = null;
 
     #[ORM\ManyToMany(targetEntity: Competence::class)]
@@ -73,17 +84,6 @@ class Dev extends User
     public function setLocalisation(string $localisation): static
     {
         $this->localisation = $localisation;
-        return $this;
-    }
-
-    public function getLangages(): array
-    {
-        return $this->langages;
-    }
-
-    public function setLangages(array $langages): static
-    {
-        $this->langages = $langages;
         return $this;
     }
 

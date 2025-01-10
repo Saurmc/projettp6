@@ -39,7 +39,7 @@ class DevDashboardController extends AbstractController
             $dev->getPrenom(),
             $dev->getLocalisation(),
             $dev->getCompetences(),
-            $dev->getAnneeExperience(),
+            $dev->getNiveauExperience(),
             $dev->getAvatar()
         ];
 

@@ -11,7 +11,7 @@ entreprise_dashboard:
 
 entreprise_profile_edit:
     path: /entreprise/profile/edit
-    controller: App\Controller\EntrepriseDashboardController::profile
+    controller: App\Controller\EntrepriseDashboardController::editProfile
 
 fiche_poste_new:
     path: /entreprise/fiche-poste/new
