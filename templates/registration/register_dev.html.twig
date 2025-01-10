@@ -123,6 +123,73 @@
         .invalid-feedback {
             display: block;
         }
+
+        .competences-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .competence-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 1rem;
+            position: relative;
+        }
+
+        .competence-label {
+            display: block;
+            padding-left: 0;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .progress {
+            height: 4px;
+            background-color: #f0f0f0;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+
+        .competence-item:hover {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .remove-competence {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            opacity: 0.5;
+        }
+
+        .remove-competence:hover {
+            opacity: 1;
+        }
+
+        .competences-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        #competenceSearch {
+            margin-bottom: 1rem;
+        }
+
+        .modal-body .competence-item {
+            margin-bottom: 0.5rem;
+            transition: background-color 0.2s;
+        }
+
+        .modal-body .competence-item:hover {
+            background-color: #f8f9fa;
+            cursor: pointer;
+        }
     </style>
 {% endblock %}
 
@@ -280,26 +347,57 @@
                                 }) }}
                             </div>
 
-                            <div class="competences-section mb-4">
-                                <div class="competences-header">
-                                    <h3>Compétences</h3>
-                                    <button type="button" class="btn-ajouter-competence">
-                                        <i class="fas fa-plus"></i>
-                                        Ajouter une compétence
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="mb-0">Compétences</h5>
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCompetenceModal">
+                                        <i class="fas fa-plus"></i> Ajouter une compétence
                                     </button>
                                 </div>
-                                <div class="p-3">
-                                    {{ form_widget(registrationForm.competences, {
-                                        'attr': {
-                                            'class': 'form-select',
-                                            'style': 'display: none;'
-                                        }
-                                    }) }}
-                                    <div id="competences-error" class="alert alert-danger mt-2" style="display: none;">
-                                        Veuillez ajouter au moins une compétence
+                                <div id="competences-wrapper">
+                                    {{ form_widget(registrationForm.competences, {'attr': {'class': 'd-none'}}) }}
+                                    <div class="competences-container" id="selectedCompetences">
+                                        {% for competence in registrationForm.competences %}
+                                            {% if competence.vars.checked %}
+                                                <div class="competence-item" data-competence-id="{{ competence.vars.id }}">
+                                                    <span class="competence-label">{{ competence.vars.label }}</span>
+                                                    <div class="progress">
+                                                        <div class="progress-bar bg-success" role="progressbar" style="width: 100%"></div>
+                                                    </div>
+                                                    <button type="button" class="btn-close remove-competence" aria-label="Supprimer"></button>
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
                                     </div>
-                                    <div class="competences-list">
-                                        <!-- Les compétences seront ajoutées ici dynamiquement -->
+                                </div>
+                                {{ form_errors(registrationForm.competences) }}
+                            </div>
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="addCompetenceModal" tabindex="-1" aria-labelledby="addCompetenceModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="addCompetenceModalLabel">Ajouter une compétence</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <input type="text" class="form-control" id="competenceSearch" placeholder="Rechercher une compétence...">
+                                            </div>
+                                            <div class="competences-list">
+                                                {% for competence in registrationForm.competences %}
+                                                    {% if not competence.vars.checked %}
+                                                        <div class="competence-item" data-competence-id="{{ competence.vars.id }}">
+                                                            <span class="competence-label">{{ competence.vars.label }}</span>
+                                                            <div class="progress">
+                                                                <div class="progress-bar bg-success" role="progressbar" style="width: 0%"></div>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -320,80 +418,68 @@
     {{ parent() }}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const competencesWrapper = document.getElementById('competences-wrapper');
+            const selectedCompetences = document.getElementById('selectedCompetences');
             const competencesList = document.querySelector('.competences-list');
-            const btnAjouter = document.querySelector('.btn-ajouter-competence');
-            const hiddenSelect = document.querySelector('#registration_form_competences');
-            const form = document.querySelector('form');
-            const competencesError = document.querySelector('#competences-error');
+            const searchInput = document.getElementById('competenceSearch');
+            const checkboxes = competencesWrapper.querySelectorAll('input[type="checkbox"]');
 
-            function addCompetenceRow() {
-                const row = document.createElement('div');
-                row.className = 'competence-row';
-                row.innerHTML = `
-                    <div class="form-group flex-grow-1">
-                        <select class="form-select competence-select">
-                            <option value="">Choisir une compétence</option>
-                            {% for group in registrationForm.competences.vars.choices %}
-                                {% if group.choices is defined %}
-                                    <optgroup label="{{ group.label }}">
-                                        {% for choice in group.choices %}
-                                            <option value="{{ choice.value }}">{{ choice.label }}</option>
-                                        {% endfor %}
-                                    </optgroup>
-                                {% else %}
-                                    <option value="{{ group.value }}">{{ group.label }}</option>
-                                {% endif %}
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <button type="button" class="btn btn-outline-danger btn-supprimer">
-                        <i class="fas fa-trash me-1"></i>Supprimer
-                    </button>
-                `;
+            // Fonction de recherche
+            searchInput.addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const competences = competencesList.querySelectorAll('.competence-item');
                 
-                competencesList.appendChild(row);
-
-                const select = row.querySelector('.competence-select');
-                select.addEventListener('change', updateHiddenSelect);
-
-                const btnSupprimer = row.querySelector('.btn-supprimer');
-                btnSupprimer.addEventListener('click', () => {
-                    row.remove();
-                    updateHiddenSelect();
-                });
-            }
-
-            function updateHiddenSelect() {
-                const selectedValues = [];
-                document.querySelectorAll('.competence-select').forEach(select => {
-                    if (select.value) {
-                        selectedValues.push(select.value);
+                competences.forEach(competence => {
+                    const label = competence.querySelector('.competence-label').textContent.toLowerCase();
+                    if (label.includes(searchTerm)) {
+                        competence.style.display = '';
+                    } else {
+                        competence.style.display = 'none';
                     }
                 });
-
-                // Mettre à jour le select caché
-                Array.from(hiddenSelect.options).forEach(option => {
-                    option.selected = selectedValues.includes(option.value);
-                });
-
-                // Afficher/masquer le message d'erreur
-                competencesError.style.display = selectedValues.length === 0 ? 'block' : 'none';
-            }
-
-            btnAjouter.addEventListener('click', addCompetenceRow);
-
-            form.addEventListener('submit', function(e) {
-                const selectedCompetences = Array.from(hiddenSelect.selectedOptions);
-                
-                if (selectedCompetences.length === 0) {
-                    e.preventDefault();
-                    competencesError.style.display = 'block';
-                    competencesError.scrollIntoView({ behavior: 'smooth' });
-                }
             });
 
-            // Ajouter une première ligne de compétence au chargement
-            addCompetenceRow();
+            // Ajout d'une compétence
+            competencesList.addEventListener('click', function(e) {
+                const competenceItem = e.target.closest('.competence-item');
+                if (!competenceItem) return;
+
+                const competenceId = competenceItem.dataset.competenceId;
+                const checkbox = competencesWrapper.querySelector(`input[id="${competenceId}"]`);
+                const clone = competenceItem.cloneNode(true);
+                
+                // Ajouter le bouton de suppression
+                const removeButton = document.createElement('button');
+                removeButton.className = 'btn-close remove-competence';
+                removeButton.setAttribute('aria-label', 'Supprimer');
+                clone.appendChild(removeButton);
+
+                selectedCompetences.appendChild(clone);
+                checkbox.checked = true;
+                competenceItem.remove();
+
+                // Fermer le modal
+                const modal = document.getElementById('addCompetenceModal');
+                const modalInstance = bootstrap.Modal.getInstance(modal);
+                modalInstance.hide();
+            });
+
+            // Suppression d'une compétence
+            selectedCompetences.addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-competence')) {
+                    const competenceItem = e.target.closest('.competence-item');
+                    const competenceId = competenceItem.dataset.competenceId;
+                    const checkbox = competencesWrapper.querySelector(`input[id="${competenceId}"]`);
+                    const clone = competenceItem.cloneNode(true);
+                    
+                    // Supprimer le bouton de suppression
+                    clone.querySelector('.remove-competence').remove();
+                    
+                    competencesList.appendChild(clone);
+                    checkbox.checked = false;
+                    competenceItem.remove();
+                }
+            });
         });
 
         function validatePassword(input) {

@@ -1,0 +1,318 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Profil{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="mb-0">Mon Profil</h3>
+                        <span class="badge bg-light text-primary">{{ completionPercentage }}% complété</span>
+                    </div>
+                </div>
+
+                {{ form_start(form, {'attr': {'class': 'needs-validation'}}) }}
+                <div class="card-body">
+                    {% for label, messages in app.flashes %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+
+                    <div class="row g-4">
+                        <!-- Informations personnelles -->
+                        <div class="col-md-6">
+                            <div class="p-3 border rounded bg-light">
+                                <h5 class="border-bottom pb-2 mb-3">
+                                    <i class="fas fa-user-circle me-2"></i>Informations personnelles
+                                </h5>
+                                <div class="mb-3">
+                                    {{ form_label(form.prenom, null, {'label_attr': {'class': 'form-label'}}) }}
+                                    {{ form_widget(form.prenom, {'attr': {'class': 'form-control'}}) }}
+                                    {{ form_errors(form.prenom) }}
+                                </div>
+                                <div class="mb-3">
+                                    {{ form_label(form.nom, null, {'label_attr': {'class': 'form-label'}}) }}
+                                    {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+                                    {{ form_errors(form.nom) }}
+                                </div>
+                                <div class="mb-3">
+                                    {{ form_label(form.localisation, null, {'label_attr': {'class': 'form-label'}}) }}
+                                    {{ form_widget(form.localisation, {'attr': {'class': 'form-control', 'placeholder': 'Ex: Paris, France'}}) }}
+                                    {{ form_errors(form.localisation) }}
+                                </div>
+                                <div class="mb-3">
+                                    {{ form_label(form.avatar, null, {'label_attr': {'class': 'form-label'}}) }}
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-image"></i></span>
+                                        {{ form_widget(form.avatar, {'attr': {'class': 'form-control'}}) }}
+                                    </div>
+                                    {{ form_errors(form.avatar) }}
+                                    <small class="text-muted">URL de votre photo de profil (optionnel)</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Informations professionnelles -->
+                        <div class="col-md-6">
+                            <div class="p-3 border rounded bg-light">
+                                <h5 class="border-bottom pb-2 mb-3">
+                                    <i class="fas fa-briefcase me-2"></i>Informations professionnelles
+                                </h5>
+                                <div class="mb-3">
+                                    {{ form_label(form.niveauExperience, null, {'label_attr': {'class': 'form-label'}}) }}
+                                    {{ form_widget(form.niveauExperience, {'attr': {'class': 'form-select'}}) }}
+                                    {{ form_errors(form.niveauExperience) }}
+                                </div>
+                                <div class="mb-3">
+                                    {{ form_label(form.salaireMinimum, null, {'label_attr': {'class': 'form-label'}}) }}
+                                    <div class="input-group">
+                                        {{ form_widget(form.salaireMinimum, {'attr': {'class': 'form-control', 'placeholder': 'Ex: 35000'}}) }}
+                                        <span class="input-group-text">€/an</span>
+                                    </div>
+                                    {{ form_errors(form.salaireMinimum) }}
+                                </div>
+                                <div class="mb-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h5 class="mb-0">Compétences</h5>
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCompetenceModal">
+                                            <i class="fas fa-plus"></i> Ajouter une compétence
+                                        </button>
+                                    </div>
+                                    <div id="competences-wrapper">
+                                        {{ form_widget(form.competences, {'attr': {'class': 'd-none'}}) }}
+                                        <div class="competences-container" id="selectedCompetences">
+                                            {% for competence in form.competences %}
+                                                {% if competence.vars.checked %}
+                                                    <div class="competence-item" data-competence-id="{{ competence.vars.id }}">
+                                                        <span class="competence-label">{{ competence.vars.label }}</span>
+                                                        <div class="progress">
+                                                            <div class="progress-bar bg-success" role="progressbar" style="width: 100%"></div>
+                                                        </div>
+                                                        <button type="button" class="btn-close remove-competence" aria-label="Supprimer"></button>
+                                                    </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    {{ form_errors(form.competences) }}
+                                </div>
+
+                                <!-- Modal -->
+                                <div class="modal fade" id="addCompetenceModal" tabindex="-1" aria-labelledby="addCompetenceModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="addCompetenceModalLabel">Ajouter une compétence</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="mb-3">
+                                                    <input type="text" class="form-control" id="competenceSearch" placeholder="Rechercher une compétence...">
+                                                </div>
+                                                <div class="competences-list">
+                                                    {% for competence in form.competences %}
+                                                        {% if not competence.vars.checked %}
+                                                            <div class="competence-item" data-competence-id="{{ competence.vars.id }}">
+                                                                <span class="competence-label">{{ competence.vars.label }}</span>
+                                                                <div class="progress">
+                                                                    <div class="progress-bar bg-success" role="progressbar" style="width: 0%"></div>
+                                                                </div>
+                                                            </div>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Biographie -->
+                        <div class="col-12">
+                            <div class="p-3 border rounded bg-light">
+                                <h5 class="border-bottom pb-2 mb-3">
+                                    <i class="fas fa-book me-2"></i>Biographie
+                                </h5>
+                                <div class="mb-3">
+                                    {{ form_widget(form.biographie, {
+                                        'attr': {
+                                            'class': 'form-control',
+                                            'rows': '5',
+                                            'style': 'resize: vertical;'
+                                        }
+                                    }) }}
+                                    {{ form_errors(form.biographie) }}
+                                    <small class="text-muted">Décrivez votre parcours, vos expériences et vos objectifs professionnels</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{{ path('dev_dashboard') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Retour
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Enregistrer les modifications
+                        </button>
+                    </div>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .competences-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .competence-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 1rem;
+            position: relative;
+        }
+
+        .competence-label {
+            display: block;
+            padding-left: 0;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .progress {
+            height: 4px;
+            background-color: #f0f0f0;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+
+        .competence-item:hover {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .remove-competence {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            opacity: 0.5;
+        }
+
+        .remove-competence:hover {
+            opacity: 1;
+        }
+
+        .competences-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        #competenceSearch {
+            margin-bottom: 1rem;
+        }
+
+        .modal-body .competence-item {
+            margin-bottom: 0.5rem;
+            transition: background-color 0.2s;
+        }
+
+        .modal-body .competence-item:hover {
+            background-color: #f8f9fa;
+            cursor: pointer;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const competencesWrapper = document.getElementById('competences-wrapper');
+            const selectedCompetences = document.getElementById('selectedCompetences');
+            const competencesList = document.querySelector('.competences-list');
+            const searchInput = document.getElementById('competenceSearch');
+            const checkboxes = competencesWrapper.querySelectorAll('input[type="checkbox"]');
+
+            // Fonction de recherche
+            searchInput.addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const competences = competencesList.querySelectorAll('.competence-item');
+                
+                competences.forEach(competence => {
+                    const label = competence.querySelector('.competence-label').textContent.toLowerCase();
+                    if (label.includes(searchTerm)) {
+                        competence.style.display = '';
+                    } else {
+                        competence.style.display = 'none';
+                    }
+                });
+            });
+
+            // Ajout d'une compétence
+            competencesList.addEventListener('click', function(e) {
+                const competenceItem = e.target.closest('.competence-item');
+                if (!competenceItem) return;
+
+                const competenceId = competenceItem.dataset.competenceId;
+                const checkbox = competencesWrapper.querySelector(`input[id="${competenceId}"]`);
+                const clone = competenceItem.cloneNode(true);
+                
+                // Ajouter le bouton de suppression
+                const removeButton = document.createElement('button');
+                removeButton.className = 'btn-close remove-competence';
+                removeButton.setAttribute('aria-label', 'Supprimer');
+                clone.appendChild(removeButton);
+
+                selectedCompetences.appendChild(clone);
+                checkbox.checked = true;
+                competenceItem.remove();
+
+                // Fermer le modal
+                const modal = document.getElementById('addCompetenceModal');
+                const modalInstance = bootstrap.Modal.getInstance(modal);
+                modalInstance.hide();
+            });
+
+            // Suppression d'une compétence
+            selectedCompetences.addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-competence')) {
+                    const competenceItem = e.target.closest('.competence-item');
+                    const competenceId = competenceItem.dataset.competenceId;
+                    const checkbox = competencesWrapper.querySelector(`input[id="${competenceId}"]`);
+                    const clone = competenceItem.cloneNode(true);
+                    
+                    // Supprimer le bouton de suppression
+                    clone.querySelector('.remove-competence').remove();
+                    
+                    competencesList.appendChild(clone);
+                    checkbox.checked = false;
+                    competenceItem.remove();
+                }
+            });
+        });
+    </script>
+{% endblock %}

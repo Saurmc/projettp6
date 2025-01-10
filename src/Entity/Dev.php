@@ -45,7 +45,8 @@ class Dev extends User
     #[Assert\Length(max: 255)]
     private ?string $avatar = null;
 
-    #[ORM\ManyToMany(targetEntity: Competence::class)]
+    #[ORM\ManyToMany(targetEntity: Competence::class, inversedBy: 'devs')]
+    #[ORM\JoinTable(name: 'dev_competence')]
     private Collection $competences;
 
     public function __construct()
@@ -143,6 +144,7 @@ class Dev extends User
     {
         if (!$this->competences->contains($competence)) {
             $this->competences->add($competence);
+            $competence->addDev($this);
         }
 
         return $this;
@@ -150,7 +152,10 @@ class Dev extends User
 
     public function removeCompetence(Competence $competence): static
     {
-        $this->competences->removeElement($competence);
+        if ($this->competences->removeElement($competence)) {
+            $competence->removeDev($this);
+        }
+
         return $this;
     }
 }

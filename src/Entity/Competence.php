@@ -24,9 +24,13 @@ class Competence
     #[ORM\ManyToMany(targetEntity: FicheDePoste::class, mappedBy: 'competences')]
     private Collection $fichesDePoste;
 
+    #[ORM\ManyToMany(targetEntity: Dev::class, mappedBy: 'competences')]
+    private Collection $devs;
+
     public function __construct()
     {
         $this->fichesDePoste = new ArrayCollection();
+        $this->devs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -75,6 +79,30 @@ class Competence
     {
         if ($this->fichesDePoste->removeElement($ficheDePoste)) {
             $ficheDePoste->removeCompetence($this);
+        }
+
+        return $this;
+    }
+
+    public function getDevs(): Collection
+    {
+        return $this->devs;
+    }
+
+    public function addDev(Dev $dev): static
+    {
+        if (!$this->devs->contains($dev)) {
+            $this->devs->add($dev);
+            $dev->addCompetence($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDev(Dev $dev): static
+    {
+        if ($this->devs->removeElement($dev)) {
+            $dev->removeCompetence($this);
         }
 
         return $this;
