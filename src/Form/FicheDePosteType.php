@@ -13,6 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Doctrine\ORM\EntityRepository;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
 class FicheDePosteType extends AbstractType
 {
@@ -47,6 +48,7 @@ class FicheDePosteType extends AbstractType
             ])
             ->add('niveauExperience', IntegerType::class, [
                 'label' => 'Années d\'expérience requises',
+                'required' => true,
                 'attr' => [
                     'min' => 0,
                     'max' => 20,
@@ -60,15 +62,11 @@ class FicheDePosteType extends AbstractType
                 'expanded' => false,
                 'query_builder' => function (EntityRepository $er) {
                     return $er->createQueryBuilder('c')
-                        ->orderBy('c.categorie', 'ASC')
-                        ->addOrderBy('c.nom', 'ASC');
+                        ->orderBy('c.nom', 'ASC');
                 },
-                'group_by' => function($choice, $key, $value) {
-                    return $choice->getCategorie();
-                },
+                'label' => 'Compétences',
                 'attr' => [
-                    'class' => 'select2',
-                    'data-placeholder' => 'Sélectionnez les compétences requises'
+                    'class' => 'form-select competence-select'
                 ]
             ])
         ;

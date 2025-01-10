@@ -49,21 +49,28 @@ class EntrepriseDashboardController extends AbstractController
     {
         $ficheDePoste = new FicheDePoste();
         $ficheDePoste->setEntreprise($this->getUser());
-        
+        $ficheDePoste->setDateCreation(new \DateTime());
+
         $form = $this->createForm(FicheDePosteType::class, $ficheDePoste);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($ficheDePoste);
-            $entityManager->flush();
+        if ($form->isSubmitted()) {
+            if ($form->isValid() && !empty($ficheDePoste->getCompetences()->toArray())) {
+                $entityManager->persist($ficheDePoste);
+                $entityManager->flush();
 
-            $this->addFlash('success', 'L\'offre d\'emploi a été créée avec succès.');
-            return $this->redirectToRoute('entreprise_dashboard');
+                $this->addFlash('success', 'La fiche de poste a été créée avec succès.');
+                return $this->redirectToRoute('entreprise_dashboard');
+            } else {
+                if (empty($ficheDePoste->getCompetences()->toArray())) {
+                    $this->addFlash('error', 'Veuillez sélectionner au moins une compétence.');
+                }
+                // Les erreurs de validation seront automatiquement affichées par le formulaire
+            }
         }
 
         return $this->render('entreprise/fiche_poste/new.html.twig', [
             'form' => $form->createView(),
-            'entreprise' => $this->getUser(),
         ]);
     }
 
