@@ -1,0 +1,85 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription Entreprise{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h2 class="card-title text-center mb-4">Inscription Entreprise</h2>
+
+                        {{ form_start(registrationForm, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form_row(registrationForm.email, {
+                                    'attr': {
+                                        'class': 'form-control',
+                                        'placeholder': 'exemple@entreprise.com'
+                                    }
+                                }) }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_row(registrationForm.nom, {
+                                    'attr': {
+                                        'class': 'form-control',
+                                        'placeholder': 'Nom de votre entreprise'
+                                    }
+                                }) }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_row(registrationForm.description, {
+                                'attr': {
+                                    'class': 'form-control',
+                                    'placeholder': 'Décrivez votre entreprise...'
+                                }
+                            }) }}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form_row(registrationForm.siteWeb, {
+                                    'attr': {
+                                        'class': 'form-control',
+                                        'placeholder': 'https://www.votreentreprise.com'
+                                    }
+                                }) }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_row(registrationForm.adresse, {
+                                    'attr': {
+                                        'class': 'form-control',
+                                        'placeholder': 'Adresse complète'
+                                    }
+                                }) }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_row(registrationForm.plainPassword, {
+                                'attr': {
+                                    'class': 'form-control',
+                                    'placeholder': 'Choisissez un mot de passe sécurisé'
+                                }
+                            }) }}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">S'inscrire</button>
+                        </div>
+
+                        {{ form_end(registrationForm) }}
+
+                        <div class="mt-3 text-center">
+                            <p>Déjà inscrit ? <a href="{{ path('app_login') }}">Connectez-vous</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

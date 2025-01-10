@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion - AdopteUnDev{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h1 class="h3 mb-4 text-center">Connexion</h1>
+
+                    {% for label, messages in app.flashes %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+
+                    <form method="post">
+                        {% if error %}
+                            <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                        {% endif %}
+
+                        {% if app.user %}
+                            <div class="mb-3">
+                                Vous êtes connecté en tant que {{ app.user.email }}, <a href="{{ path('app_logout') }}">Se déconnecter</a>
+                            </div>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <label for="inputEmail" class="form-label">Email</label>
+                            <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="inputPassword" class="form-label">Mot de passe</label>
+                            <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+                        </div>
+
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="_remember_me" id="remember_me">
+                                <label class="form-check-label" for="remember_me">
+                                    Se souvenir de moi
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary" type="submit">
+                                Se connecter
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="mt-3 text-center">
+                        <p>Pas encore de compte ?</p>
+                        <div class="d-flex justify-content-center gap-2">
+                            <a href="{{ path('register_dev') }}" class="btn btn-outline-primary">S'inscrire en tant que développeur</a>
+                            <a href="{{ path('register_company') }}" class="btn btn-outline-primary">S'inscrire en tant qu'entreprise</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

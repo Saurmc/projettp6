@@ -1,0 +1,75 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}À propos - {{ entreprise.nom }}{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .about-section {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    .company-logo {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 50%;
+        margin-bottom: 2rem;
+    }
+    .company-info {
+        background-color: #fff;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="about-section">
+        <div class="text-center mb-4">
+            {% if entreprise.logo %}
+                <img src="{{ asset('uploads/logos/' ~ entreprise.logo) }}" alt="Logo {{ entreprise.nom }}" class="company-logo">
+            {% else %}
+                <div class="company-logo bg-light d-flex align-items-center justify-content-center">
+                    <i class="fas fa-building fa-3x text-secondary"></i>
+                </div>
+            {% endif %}
+            <h1 class="mb-4">À propos de {{ entreprise.nom }}</h1>
+        </div>
+
+        <div class="company-info">
+            <div class="mb-4">
+                <h3>Notre entreprise</h3>
+                <p>{{ entreprise.description ?: 'Description non disponible' }}</p>
+            </div>
+
+            <div class="mb-4">
+                <h3>Localisation</h3>
+                <p><i class="fas fa-map-marker-alt me-2"></i>{{ entreprise.adresse }}</p>
+            </div>
+
+            {% if entreprise.siteWeb %}
+                <div class="mb-4">
+                    <h3>Site Web</h3>
+                    <p>
+                        <a href="{{ entreprise.siteWeb }}" target="_blank" class="btn btn-outline-primary">
+                            <i class="fas fa-globe me-2"></i>Visiter notre site web
+                        </a>
+                    </p>
+                </div>
+            {% endif %}
+
+            <div class="text-center mt-5">
+                <a href="{{ path('entreprise_dashboard') }}" class="btn btn-secondary me-2">
+                    <i class="fas fa-arrow-left me-2"></i>Retour au tableau de bord
+                </a>
+                <a href="{{ path('entreprise_profile_edit') }}" class="btn btn-primary">
+                    <i class="fas fa-edit me-2"></i>Modifier les informations
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

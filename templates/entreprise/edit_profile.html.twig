@@ -1,0 +1,87 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier le profil - {{ entreprise.nom }}{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">Modifier votre profil</h2>
+
+                    {{ form_start(form) }}
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            {{ form_row(form.nom, {
+                                'attr': {
+                                    'class': 'form-control',
+                                    'placeholder': 'Nom de l\'entreprise'
+                                }
+                            }) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.email, {
+                                'attr': {
+                                    'class': 'form-control',
+                                    'placeholder': 'Email'
+                                }
+                            }) }}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_row(form.description, {
+                            'attr': {
+                                'class': 'form-control',
+                                'rows': 4,
+                                'placeholder': 'Description de votre entreprise'
+                            }
+                        }) }}
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            {{ form_row(form.siteWeb, {
+                                'attr': {
+                                    'class': 'form-control',
+                                    'placeholder': 'https://www.example.com'
+                                }
+                            }) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.adresse, {
+                                'attr': {
+                                    'class': 'form-control',
+                                    'placeholder': 'Adresse complète'
+                                }
+                            }) }}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_row(form.logo, {
+                            'attr': {
+                                'class': 'form-control'
+                            }
+                        }) }}
+                        <small class="form-text text-muted">Format recommandé : JPG ou PNG, max 2MB</small>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Enregistrer les modifications
+                        </button>
+                        <a href="{{ path('entreprise_dashboard') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Retour au dashboard
+                        </a>
+                    </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
