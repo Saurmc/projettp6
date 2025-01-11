@@ -8,6 +8,7 @@ use App\Form\EntrepriseProfileType;
 use App\Form\FicheDePosteType;
 use App\Repository\DevRepository;
 use App\Repository\FicheDePosteRepository;
+use App\Repository\CandidatureRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,18 +22,29 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 class EntrepriseDashboardController extends AbstractController
 {
     #[Route('/dashboard', name: 'entreprise_dashboard')]
-    public function index(FicheDePosteRepository $ficheDePosteRepository, DevRepository $devRepository): Response
+    public function index(FicheDePosteRepository $ficheDePosteRepository, DevRepository $devRepository, CandidatureRepository $candidatureRepository): Response
     {
+        /** @var \App\Entity\Entreprise $entreprise */
         $entreprise = $this->getUser();
+        
+        // Récupérer les fiches de poste de l'entreprise
         $fichesDePoste = $ficheDePosteRepository->findBy(['entreprise' => $entreprise], ['dateCreation' => 'DESC']);
         
-        // Récupérer tous les développeurs avec leurs compétences
-        $devs = $devRepository->findAllWithCompetences();
+        // Récupérer les développeurs les plus consultés
+        $topDevs = $devRepository->findMostViewedDevs(5);
+        
+        // Récupérer les 3 derniers profils de développeurs créés
+        $latestDevs = $devRepository->findLatestDevs(3);
+
+        // Récupérer toutes les candidatures pour l'entreprise
+        $candidatures = $candidatureRepository->findByEntreprise($entreprise);
 
         return $this->render('entreprise/dashboard.html.twig', [
             'entreprise' => $entreprise,
             'fichesDePoste' => $fichesDePoste,
-            'devs' => $devs,
+            'topDevs' => $topDevs,
+            'latestDevs' => $latestDevs,
+            'candidatures' => $candidatures,
         ]);
     }
 
@@ -186,6 +198,19 @@ class EntrepriseDashboardController extends AbstractController
         
         return $this->render('entreprise/about.html.twig', [
             'entreprise' => $entreprise,
+        ]);
+    }
+
+    #[Route('/dev/{id}', name: 'dev_profile_show')]
+    public function showDevProfile(Dev $dev, EntityManagerInterface $entityManager): Response
+    {
+        // Incrémenter le compteur de vues
+        $dev->incrementViewCount();
+        $entityManager->flush();
+
+        return $this->render('entreprise/dev_profile.html.twig', [
+            'dev' => $dev,
+            'entreprise' => $this->getUser(),
         ]);
     }
 }

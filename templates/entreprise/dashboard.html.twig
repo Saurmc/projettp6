@@ -1,147 +1,151 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Dashboard Entreprise - {{ app.user.nom }}{% endblock %}
-
-{% block stylesheets %}
-<style>
-    .profile-card {
-        border-radius: 15px;
-        box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    }
-    .job-card {
-        transition: transform 0.2s;
-    }
-    .job-card:hover {
-        transform: translateY(-5px);
-    }
-    .company-logo {
-        width: 120px;
-        height: 120px;
-        object-fit: cover;
-        border-radius: 50%;
-    }
-</style>
-{% endblock %}
+{% block title %}Dashboard Entreprise{% endblock %}
 
 {% block body %}
-<div class="container py-5">
-    <div class="row">
-        <!-- Profil de l'entreprise -->
-        <div class="col-md-4">
-            <div class="card profile-card">
-                <div class="card-body text-center">
-                    {% if entreprise.logo %}
-                        <img src="{{ asset('uploads/logos/' ~ entreprise.logo) }}" alt="Logo" class="company-logo mb-3">
-                    {% else %}
-                        <div class="company-logo bg-light d-flex align-items-center justify-content-center mb-3 mx-auto">
-                            <i class="fas fa-building fa-3x text-secondary"></i>
-                        </div>
-                    {% endif %}
-                    
-                    <h2 class="card-title">{{ entreprise.nom }}</h2>
-                    <p class="text-muted">{{ entreprise.adresse }}</p>
-                    
-                    <hr>
-                    
-                    <div class="mb-3">
-                        <h5>À propos</h5>
-                        <p>{{ entreprise.description ?: 'Aucune description fournie' }}</p>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Contenu principal -->
+            <main class="col-12 px-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1>Tableau de bord</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <a href="{{ path('app_entreprise_candidatures') }}" class="btn btn-sm btn-outline-secondary me-2">
+                            <i class="fas fa-list"></i> Voir les candidatures
+                        </a>
                     </div>
-                    
-                    {% if entreprise.siteWeb %}
-                        <div class="mb-3">
-                            <a href="{{ entreprise.siteWeb }}" target="_blank" class="btn btn-outline-primary">
-                                <i class="fas fa-globe me-2"></i>Site Web
+                </div>
+
+                <!-- Section Profil -->
+                <section class="mb-4">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">Profil de l'entreprise</h5>
+                            <a href="{{ path('entreprise_profile_edit') }}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-edit"></i> Modifier
                             </a>
                         </div>
-                    {% endif %}
-                    
-                    <a href="{{ path('entreprise_profile_edit') }}" class="btn btn-primary">
-                        <i class="fas fa-edit me-2"></i>Modifier le profil
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Liste des offres d'emploi -->
-        <div class="col-md-8">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h3>Vos offres d'emploi</h3>
-                <a href="{{ path('fiche_poste_new') }}" class="btn btn-success">
-                    <i class="fas fa-plus-circle me-2"></i>Nouvelle offre
-                </a>
-            </div>
-
-            {% if fichesDePoste|length > 0 %}
-                {% for fiche in fichesDePoste %}
-                    <div class="card mb-3 job-card">
                         <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <h4 class="card-title">{{ fiche.titre }}</h4>
-                                    <p class="text-muted mb-2">
-                                        <i class="fas fa-map-marker-alt me-2"></i>{{ fiche.localisation }}
-                                        <span class="mx-2">•</span>
-                                        <i class="fas fa-clock me-2"></i>{{ fiche.dateCreation|date('d/m/Y') }}
-                                    </p>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <h6>Informations de l'entreprise</h6>
+                                    {% if entreprise.nom %}
+                                        <p><strong>Nom:</strong> {{ entreprise.nom }}</p>
+                                    {% endif %}
+                                    {% if entreprise.adresse %}
+                                        <p><strong>Adresse:</strong> {{ entreprise.adresse }}</p>
+                                    {% endif %}
+                                    {% if entreprise.siteWeb %}
+                                        <p><strong>Site Web:</strong> <a href="{{ entreprise.siteWeb }}" target="_blank">{{ entreprise.siteWeb }}</a></p>
+                                    {% endif %}
                                 </div>
-                                <div class="btn-group">
-                                    <a href="{{ path('fiche_poste_edit', {'id': fiche.id}) }}" class="btn btn-outline-primary btn-sm">
-                                        <i class="fas fa-edit me-1"></i>Modifier
+                                <div class="col-md-8">
+                                    <h6>Description</h6>
+                                    <p>{{ entreprise.description ?: 'Aucune description renseignée.' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section Offres d'emploi -->
+                <section class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2>Vos offres d'emploi</h2>
+                        <a href="{{ path('fiche_poste_new') }}" class="btn btn-success">
+                            <i class="fas fa-plus-circle"></i> Nouvelle offre
+                        </a>
+                    </div>
+
+                    {% if entreprise.fichesDePoste|length > 0 %}
+                        <div class="row">
+                            {% for fiche in entreprise.fichesDePoste %}
+                                <div class="col-md-4 mb-3">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{ fiche.titre }}</h5>
+                                            <p class="card-text">
+                                                {% if fiche.localisation %}
+                                                    <i class="fas fa-map-marker-alt"></i> {{ fiche.localisation }}<br>
+                                                {% endif %}
+                                                {% if fiche.salaire %}
+                                                    <i class="fas fa-euro-sign"></i> {{ fiche.salaire }}€<br>
+                                                {% endif %}
+                                                <small class="text-muted">Publié le {{ fiche.dateCreation|date('d/m/Y') }}</small>
+                                            </p>
+                                            <div class="mb-2">
+                                                {% for competence in fiche.competences %}
+                                                    <span class="badge bg-primary me-1">{{ competence.nom }}</span>
+                                                {% endfor %}
+                                            </div>
+                                            <div class="btn-group">
+                                                <a href="{{ path('fiche_poste_show', {'id': fiche.id}) }}" class="btn btn-outline-primary btn-sm">
+                                                    <i class="fas fa-eye"></i> Voir
+                                                </a>
+                                                <a href="{{ path('fiche_poste_edit', {'id': fiche.id}) }}" class="btn btn-outline-warning btn-sm">
+                                                    <i class="fas fa-edit"></i> Modifier
+                                                </a>
+                                                <form method="post" action="{{ path('fiche_poste_delete', {'id': fiche.id}) }}" 
+                                                      style="display: inline-block;"
+                                                      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette offre ?')">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ fiche.id) }}">
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                        <i class="fas fa-trash"></i> Supprimer
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            Vous n'avez pas encore publié d'offres d'emploi. 
+                            <a href="{{ path('fiche_poste_new') }}" class="alert-link">Créez votre première offre</a>
+                        </div>
+                    {% endif %}
+                </section>
+
+                <!-- Section Statistiques -->
+                <section class="mb-4">
+                    <h2>Statistiques</h2>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <div class="card bg-primary text-white h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">Offres actives</h5>
+                                    <p class="card-text display-4">{{ entreprise.fichesDePoste|length }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card bg-success text-white h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">Candidatures reçues</h5>
+                                    <p class="card-text display-4">{{ candidatures|length }}</p>
+                                    <a href="{{ path('app_entreprise_candidatures') }}" class="text-white text-decoration-none">
+                                        <small>Voir toutes les candidatures <i class="fas fa-arrow-right"></i></small>
                                     </a>
-                                    <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ fiche.id }}">
-                                        <i class="fas fa-trash-alt me-1"></i>Supprimer
-                                    </button>
-                                </div>
-                            </div>
-
-                            <p class="card-text mb-2">{{ fiche.description|slice(0, 150) }}...</p>
-
-                            <div class="mb-2">
-                                {% for competence in fiche.competences %}
-                                    <span class="badge bg-primary me-1">{{ competence.nom }}</span>
-                                {% endfor %}
-                            </div>
-
-                            <div class="d-flex justify-content-between align-items-center">
-                                <small class="text-muted">
-                                    <i class="fas fa-euro-sign me-1"></i>{{ fiche.salaire }} €/an
-                                </small>
-                                <a href="{{ path('fiche_poste_show', {'id': fiche.id}) }}" class="btn btn-link">
-                                    Voir les détails
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Modal de confirmation de suppression -->
-                    <div class="modal fade" id="deleteModal{{ fiche.id }}" tabindex="-1">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Confirmer la suppression</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body">
-                                    Êtes-vous sûr de vouloir supprimer cette offre d'emploi ?
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                                    <form action="{{ path('entreprise_fiche_poste_delete', {'id': fiche.id}) }}" method="post" style="display: inline;">
-                                        <button type="submit" class="btn btn-danger">Supprimer</button>
-                                    </form>
                                 </div>
                             </div>
                         </div>
                     </div>
-                {% endfor %}
-            {% else %}
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle me-2"></i>Vous n'avez pas encore publié d'offres d'emploi.
-                    <a href="{{ path('fiche_poste_new') }}" class="alert-link">Créez votre première offre</a>
-                </div>
-            {% endif %}
+                </section>
+            </main>
         </div>
     </div>
-</div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .card {
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+    </style>
 {% endblock %}

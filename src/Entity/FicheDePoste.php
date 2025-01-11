@@ -38,6 +38,9 @@ class FicheDePoste
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateCreation = null;
 
+    #[ORM\Column]
+    private ?int $viewCount = 0;
+
     #[ORM\ManyToMany(targetEntity: Competence::class, inversedBy: 'fichesDePoste')]
     private Collection $competences;
 
@@ -126,6 +129,23 @@ class FicheDePoste
     public function setDateCreation(\DateTimeInterface $dateCreation): static
     {
         $this->dateCreation = $dateCreation;
+        return $this;
+    }
+
+    public function getViewCount(): ?int
+    {
+        return $this->viewCount;
+    }
+
+    public function setViewCount(int $viewCount): self
+    {
+        $this->viewCount = $viewCount;
+        return $this;
+    }
+
+    public function incrementViewCount(): self
+    {
+        $this->viewCount++;
         return $this;
     }
 

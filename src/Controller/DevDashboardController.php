@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\FicheDePoste;
 use App\Form\DevProfileType;
 use App\Repository\FicheDePosteRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,16 +24,20 @@ class DevDashboardController extends AbstractController
         /** @var \App\Entity\Dev $dev */
         $dev = $this->getUser();
         
-        // Récupérer les fiches de poste qui correspondent aux compétences du développeur
-        $fichesDePoste = $ficheDePosteRepository->findMatchingFichesForDev($dev);
+        // Récupérer les offres qui correspondent au profil
+        $matchingFiches = $ficheDePosteRepository->findMatchingFichesForDevWithScore($dev, 6);
         
-        // Calculer le pourcentage de complétion du profil
-        $completionPercentage = $this->calculateDevProfileCompletion($dev);
+        // Récupérer les fiches de poste les plus populaires
+        $topFiches = $ficheDePosteRepository->findMostPopularFiches(6);
+        
+        // Récupérer les dernières fiches de poste
+        $latestFiches = $ficheDePosteRepository->findLatestFiches(6);
 
         return $this->render('dev/dashboard.html.twig', [
             'dev' => $dev,
-            'fichesDePoste' => $fichesDePoste,
-            'completionPercentage' => $completionPercentage
+            'matchingFiches' => $matchingFiches,
+            'topFiches' => $topFiches,
+            'latestFiches' => $latestFiches,
         ]);
     }
 
@@ -81,6 +86,19 @@ class DevDashboardController extends AbstractController
             'dev' => $user,
             'form' => $form->createView(),
             'completionPercentage' => $this->calculateDevProfileCompletion($user)
+        ]);
+    }
+
+    #[Route('/fiche-poste/{id}', name: 'fiche_poste_show')]
+    public function showFichePoste(FicheDePoste $ficheDePoste, EntityManagerInterface $entityManager): Response
+    {
+        // Incrémenter le compteur de vues
+        $ficheDePoste->incrementViewCount();
+        $entityManager->flush();
+
+        return $this->render('dev/fiche_poste/show.html.twig', [
+            'ficheDePoste' => $ficheDePoste,
+            'dev' => $this->getUser(),
         ]);
     }
 }

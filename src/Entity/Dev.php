@@ -45,13 +45,20 @@ class Dev extends User
     #[Assert\Length(max: 255)]
     private ?string $avatar = null;
 
+    #[ORM\Column]
+    private ?int $viewCount = 0;
+
     #[ORM\ManyToMany(targetEntity: Competence::class, inversedBy: 'devs')]
     #[ORM\JoinTable(name: 'dev_competence')]
     private Collection $competences;
 
+    #[ORM\OneToMany(mappedBy: 'dev', targetEntity: Candidature::class, orphanRemoval: true)]
+    private Collection $candidatures;
+
     public function __construct()
     {
         $this->competences = new ArrayCollection();
+        $this->candidatures = new ArrayCollection();
         $this->setRole('ROLE_DEV');
     }
 
@@ -132,6 +139,23 @@ class Dev extends User
         return $this;
     }
 
+    public function getViewCount(): ?int
+    {
+        return $this->viewCount;
+    }
+
+    public function setViewCount(int $viewCount): self
+    {
+        $this->viewCount = $viewCount;
+        return $this;
+    }
+
+    public function incrementViewCount(): self
+    {
+        $this->viewCount++;
+        return $this;
+    }
+
     /**
      * @return Collection<int, Competence>
      */
@@ -154,6 +178,36 @@ class Dev extends User
     {
         if ($this->competences->removeElement($competence)) {
             $competence->removeDev($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Candidature>
+     */
+    public function getCandidatures(): Collection
+    {
+        return $this->candidatures;
+    }
+
+    public function addCandidature(Candidature $candidature): static
+    {
+        if (!$this->candidatures->contains($candidature)) {
+            $this->candidatures->add($candidature);
+            $candidature->setDev($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCandidature(Candidature $candidature): static
+    {
+        if ($this->candidatures->removeElement($candidature)) {
+            // set the owning side to null (unless already changed)
+            if ($candidature->getDev() === $this) {
+                $candidature->setDev(null);
+            }
         }
 
         return $this;
