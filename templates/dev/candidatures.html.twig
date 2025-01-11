@@ -1,0 +1,75 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Candidatures{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1 class="mb-4">Mes Candidatures</h1>
+
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        {% for message in app.flashes('warning') %}
+            <div class="alert alert-warning">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        {% if candidatures|length > 0 %}
+            <div class="row">
+                {% for candidature in candidatures %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ candidature.ficheDePoste.titre }}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">{{ candidature.ficheDePoste.entreprise.nom }}</h6>
+                                
+                                <p class="card-text">
+                                    <i class="fas fa-map-marker-alt"></i> {{ candidature.ficheDePoste.localisation }}<br>
+                                    <i class="fas fa-euro-sign"></i> {{ candidature.ficheDePoste.salaire }}€
+                                </p>
+                                
+                                <p class="card-text">
+                                    <small class="text-muted">
+                                        Postulé le {{ candidature.datePostulation|date('d/m/Y') }}
+                                    </small>
+                                </p>
+                                
+                                <div class="mb-2">
+                                    {% for competence in candidature.ficheDePoste.competences %}
+                                        <span class="badge bg-primary me-1">{{ competence.nom }}</span>
+                                    {% endfor %}
+                                </div>
+
+                                <span class="badge {% if candidature.statut == 'en_attente' %}bg-warning{% elseif candidature.statut == 'acceptee' %}bg-success{% else %}bg-danger{% endif %}">
+                                    {{ candidature.statut|title|replace({'_': ' '}) }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                Vous n'avez pas encore postulé à des offres. 
+                <a href="{{ path('app_dev_dashboard') }}" class="alert-link">Découvrez les offres disponibles</a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .card {
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+    </style>
+{% endblock %}
