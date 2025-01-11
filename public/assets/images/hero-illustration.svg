@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="900" height="600" viewBox="0 0 900 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M450 600C698.528 600 900 465.685 900 300C900 134.315 698.528 0 450 0C201.472 0 0 134.315 0 300C0 465.685 201.472 600 450 600ZM450 500C643.594 500 800 409.411 800 300C800 190.589 643.594 100 450 100C256.406 100 100 190.589 100 300C100 409.411 256.406 500 450 500Z" fill="white" fill-opacity="0.1"/>
+<path d="M448.5 290C448.5 290 448.5 290 448.5 290C448.5 290 448.5 290 448.5 290Z" fill="white"/>
+<path d="M451.5 290C451.5 290 451.5 290 451.5 290C451.5 290 451.5 290 451.5 290Z" fill="white"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M450 400C505.228 400 550 355.228 550 300C550 244.772 505.228 200 450 200C394.772 200 350 244.772 350 300C350 355.228 394.772 400 450 400ZM450 350C477.614 350 500 327.614 500 300C500 272.386 477.614 250 450 250C422.386 250 400 272.386 400 300C400 327.614 422.386 350 450 350Z" fill="white" fill-opacity="0.1"/>
+<path d="M450 300L550 300" stroke="white" stroke-opacity="0.1" stroke-width="10"/>
+<path d="M450 300L450 200" stroke="white" stroke-opacity="0.1" stroke-width="10"/>
+<circle cx="450" cy="300" r="10" fill="white"/>
+</svg>

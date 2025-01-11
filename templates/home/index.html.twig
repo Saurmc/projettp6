@@ -1,108 +1,104 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}AdopteUnDev - Connectez les talents aux opportunités{% endblock %}
+{% block title %}Dev Connect - Connectez les talents aux opportunités{% endblock %}
 
 {% block body %}
 <!-- Hero Section -->
-<div class="bg-primary text-white py-5">
+<section class="hero-section text-white text-center text-md-start">
     <div class="container">
         <div class="row align-items-center">
             <div class="col-md-6">
-                <h1 class="display-4 fw-bold mb-4">AdopteUnDev</h1>
-                <p class="lead mb-4">La plateforme qui connecte les développeurs talentueux avec les entreprises innovantes.</p>
-            </div>
-            <div class="col-md-6 text-center">
-                <img src="https://illustrations.popsy.co/white/developer.svg" alt="Développeur" class="img-fluid" style="max-height: 300px;">
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Choix d'inscription -->
-<div class="container my-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8 text-center mb-4">
-            <h2 class="display-5 mb-3">Rejoignez l'aventure</h2>
-            <p class="lead">Choisissez votre profil pour commencer</p>
-        </div>
-    </div>
-    
-    <div class="row justify-content-center g-4">
-        <div class="col-md-5">
-            <div class="card h-100 shadow-sm hover-card">
-                <div class="card-body text-center p-5">
-                    <i class="fas fa-laptop-code fa-4x text-primary mb-4"></i>
-                    <h3 class="card-title mb-3">Je suis développeur</h3>
-                    <p class="card-text mb-4">
-                        Créez votre profil, mettez en avant vos compétences et trouvez l'entreprise qui vous correspond.
-                    </p>
-                    <a href="{{ path('register_dev') }}" class="btn btn-primary btn-lg">
-                        <i class="fas fa-user-plus me-2"></i>S'inscrire en tant que développeur
+                <h1 class="display-4 fw-bold mb-4">Trouvez votre match parfait dans le monde du développement</h1>
+                <p class="lead mb-4">Une plateforme innovante qui connecte les développeurs talentueux avec les entreprises visionnaires.</p>
+                <div class="d-grid gap-3 d-sm-flex justify-content-sm-start">
+                    <a href="{{ path('register_dev') }}" class="btn btn-light btn-lg px-4 me-sm-3 btn-hero">
+                        <i class="fas fa-laptop-code me-2"></i>Je suis développeur
+                    </a>
+                    <a href="{{ path('register_company') }}" class="btn btn-outline-light btn-lg px-4 btn-hero">
+                        <i class="fas fa-building me-2"></i>Je suis une entreprise
                     </a>
                 </div>
             </div>
-        </div>
-
-        <div class="col-md-5">
-            <div class="card h-100 shadow-sm hover-card">
-                <div class="card-body text-center p-5">
-                    <i class="fas fa-building fa-4x text-success mb-4"></i>
-                    <h3 class="card-title mb-3">Je suis une entreprise</h3>
-                    <p class="card-text mb-4">
-                        Publiez vos offres d'emploi et trouvez les meilleurs talents pour vos projets.
-                    </p>
-                    <a href="{{ path('register_company') }}" class="btn btn-success btn-lg">
-                        <i class="fas fa-user-plus me-2"></i>S'inscrire en tant qu'entreprise
-                    </a>
-                </div>
+            <div class="col-md-6 d-none d-md-block text-center">
+                <img src="{{ asset('assets/images/hero-illustration.svg') }}" alt="Dev Connect" class="img-fluid" style="max-height: 400px;">
             </div>
         </div>
     </div>
-
-    <div class="row justify-content-center mt-4">
-        <div class="col-md-6 text-center">
-            <p class="mb-0">Déjà inscrit ? <a href="{{ path('app_login') }}">Connectez-vous ici</a></p>
-        </div>
-    </div>
-</div>
+</section>
 
 <!-- Features Section -->
-<div class="bg-light py-5">
+<section class="features-section py-5">
     <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">Pourquoi nous choisir ?</h2>
+            <p class="lead text-muted">Des fonctionnalités uniques pour une expérience optimale</p>
+        </div>
+        
         <div class="row g-4">
             <div class="col-md-4">
-                <div class="text-center">
-                    <i class="fas fa-search fa-3x text-primary mb-3"></i>
-                    <h3 class="h4">Recherche par compétences</h3>
-                    <p>Trouvez rapidement les profils qui correspondent exactement à vos besoins.</p>
+                <div class="feature-card">
+                    <div class="text-center">
+                        <i class="fas fa-search fa-3x text-primary mb-4"></i>
+                        <h3 class="feature-title">Recherche intelligente</h3>
+                        <p class="feature-text">Trouvez rapidement les profils qui correspondent exactement à vos besoins grâce à notre système de recherche avancé.</p>
+                    </div>
                 </div>
             </div>
+            
             <div class="col-md-4">
-                <div class="text-center">
-                    <i class="fas fa-handshake fa-3x text-primary mb-3"></i>
-                    <h3 class="h4">Mise en relation directe</h3>
-                    <p>Contactez directement les développeurs et discutez de vos projets sans intermédiaire.</p>
+                <div class="feature-card">
+                    <div class="text-center">
+                        <i class="fas fa-handshake fa-3x text-primary mb-4"></i>
+                        <h3 class="feature-title">Mise en relation directe</h3>
+                        <p class="feature-text">Communiquez directement avec les développeurs ou les entreprises qui vous intéressent.</p>
+                    </div>
                 </div>
             </div>
+            
             <div class="col-md-4">
-                <div class="text-center">
-                    <i class="fas fa-check-circle fa-3x text-primary mb-3"></i>
-                    <h3 class="h4">Profils vérifiés</h3>
-                    <p>Tous nos développeurs sont vérifiés pour assurer la qualité et le professionnalisme.</p>
+                <div class="feature-card">
+                    <div class="text-center">
+                        <i class="fas fa-chart-line fa-3x text-primary mb-4"></i>
+                        <h3 class="feature-title">Suivi des candidatures</h3>
+                        <p class="feature-text">Gérez et suivez facilement l'état de vos candidatures ou de vos offres d'emploi.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
 
-{% block stylesheets %}
-<style>
-    .hover-card {
-        transition: transform 0.2s ease-in-out;
-    }
-    .hover-card:hover {
-        transform: translateY(-5px);
-    }
-</style>
-{% endblock %}
+<!-- Profile Choice Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Prêt à commencer l'aventure ?</h2>
+            <p class="lead">Choisissez votre profil et rejoignez notre communauté</p>
+        </div>
+        
+        <div class="row g-4 profile-cards">
+            <div class="col-md-6">
+                <div class="profile-card">
+                    <i class="fas fa-laptop-code icon"></i>
+                    <h3>Développeur</h3>
+                    <p>Créez votre profil, mettez en avant vos compétences et trouvez l'entreprise qui vous correspond.</p>
+                    <a href="{{ path('register_dev') }}" class="btn btn-primary">
+                        <i class="fas fa-user-plus me-2"></i>Créer mon profil développeur
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="profile-card enterprise">
+                    <i class="fas fa-building icon"></i>
+                    <h3>Entreprise</h3>
+                    <p>Publiez vos offres d'emploi et trouvez les meilleurs talents pour vos projets.</p>
+                    <a href="{{ path('register_company') }}" class="btn btn-success">
+                        <i class="fas fa-user-plus me-2"></i>Créer mon profil entreprise
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}

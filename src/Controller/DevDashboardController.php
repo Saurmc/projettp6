@@ -19,7 +19,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[IsGranted('ROLE_DEV')]
 class DevDashboardController extends AbstractController
 {
-    #[Route('/dashboard', name: 'app_dev_dashboard')]
+    #[Route('/dashboard', name: 'dev_dashboard')]
     public function index(Request $request, FicheDePosteRepository $ficheDePosteRepository, CompetenceRepository $competenceRepository): Response
     {
         /** @var \App\Entity\Dev $dev */
@@ -87,7 +87,7 @@ class DevDashboardController extends AbstractController
         return (int) (count($filledFields) / count($fields) * 100);
     }
 
-    #[Route('/profile', name: 'app_dev_profile')]
+    #[Route('/profile', name: 'dev_profile')]
     public function profile(Request $request, EntityManagerInterface $entityManager): Response
     {
         $user = $this->getUser();
@@ -126,7 +126,7 @@ class DevDashboardController extends AbstractController
         ]);
     }
 
-    #[Route('search', name: 'app_dev_search')]
+    #[Route('search', name: 'dev_search')]
     public function search(Request $request, FicheDePosteRepository $ficheDePosteRepository, CompetenceRepository $competenceRepository): Response
     {
         /** @var \App\Entity\Dev $dev */
