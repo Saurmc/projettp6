@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\FicheDePoste;
 use App\Form\DevProfileType;
 use App\Repository\FicheDePosteRepository;
+use App\Repository\CompetenceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,26 +19,49 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[IsGranted('ROLE_DEV')]
 class DevDashboardController extends AbstractController
 {
-    #[Route('/dashboard', name: 'dev_dashboard')]
-    public function index(FicheDePosteRepository $ficheDePosteRepository): Response
+    #[Route('/dashboard', name: 'app_dev_dashboard')]
+    public function index(Request $request, FicheDePosteRepository $ficheDePosteRepository, CompetenceRepository $competenceRepository): Response
     {
         /** @var \App\Entity\Dev $dev */
         $dev = $this->getUser();
-        
-        // Récupérer les offres qui correspondent au profil
-        $matchingFiches = $ficheDePosteRepository->findMatchingFichesForDevWithScore($dev, 6);
-        
+
+        // Récupérer les fiches de poste qui correspondent au profil
+        $matchingFiches = $ficheDePosteRepository->findMatchingFichesForDev($dev);
+
+        // Calculer les scores de correspondance pour chaque fiche
+        foreach ($matchingFiches as $fiche) {
+            $fiche->calculateMatchScore($dev);
+        }
+
         // Récupérer les fiches de poste les plus populaires
-        $topFiches = $ficheDePosteRepository->findMostPopularFiches(6);
-        
-        // Récupérer les dernières fiches de poste
-        $latestFiches = $ficheDePosteRepository->findLatestFiches(6);
+        $topFiches = $ficheDePosteRepository->findBy([], ['viewCount' => 'DESC'], 6);
+
+        // Calculer les scores pour les fiches populaires aussi
+        foreach ($topFiches as $fiche) {
+            $fiche->calculateMatchScore($dev);
+        }
+
+        // Récupérer toutes les compétences pour le formulaire de recherche
+        $competences = $competenceRepository->findAll();
+
+        // Gérer la recherche si des paramètres sont présents
+        $searchParams = $request->query->all();
+        if (!empty($searchParams)) {
+            $fiches = $ficheDePosteRepository->searchFiches(
+                isset($searchParams['competences']) ? explode(',', $searchParams['competences']) : null,
+                $searchParams['localisation'] ?? null,
+                isset($searchParams['salaireMin']) ? (int)$searchParams['salaireMin'] : null,
+                isset($searchParams['salaireMax']) ? (int)$searchParams['salaireMax'] : null,
+                isset($searchParams['niveauExperience']) ? (int)$searchParams['niveauExperience'] : null
+            );
+            $matchingFiches = $fiches;
+        }
 
         return $this->render('dev/dashboard.html.twig', [
-            'dev' => $dev,
             'matchingFiches' => $matchingFiches,
             'topFiches' => $topFiches,
-            'latestFiches' => $latestFiches,
+            'competences' => $competences,
+            'searchParams' => $searchParams ?? []
         ]);
     }
 
@@ -99,6 +123,41 @@ class DevDashboardController extends AbstractController
         return $this->render('dev/fiche_poste/show.html.twig', [
             'ficheDePoste' => $ficheDePoste,
             'dev' => $this->getUser(),
+        ]);
+    }
+
+    #[Route('search', name: 'app_dev_search')]
+    public function search(Request $request, FicheDePosteRepository $ficheDePosteRepository, CompetenceRepository $competenceRepository): Response
+    {
+        /** @var \App\Entity\Dev $dev */
+        $dev = $this->getUser();
+
+        // Récupérer toutes les compétences pour le formulaire de recherche
+        $competences = $competenceRepository->findAll();
+
+        // Récupérer les paramètres de recherche
+        $searchParams = $request->query->all();
+        $fiches = [];
+
+        if (!empty($searchParams)) {
+            $fiches = $ficheDePosteRepository->searchFiches(
+                isset($searchParams['competences']) ? explode(',', $searchParams['competences']) : null,
+                $searchParams['localisation'] ?? null,
+                isset($searchParams['salaireMin']) ? (int)$searchParams['salaireMin'] : null,
+                isset($searchParams['salaireMax']) ? (int)$searchParams['salaireMax'] : null,
+                isset($searchParams['niveauExperience']) ? (int)$searchParams['niveauExperience'] : null
+            );
+
+            // Calculer les scores de correspondance pour chaque fiche
+            foreach ($fiches as $fiche) {
+                $fiche->calculateMatchScore($dev);
+            }
+        }
+
+        return $this->render('dev/search.html.twig', [
+            'fiches' => $fiches,
+            'competences' => $competences,
+            'searchParams' => $searchParams
         ]);
     }
 }

@@ -7,8 +7,40 @@
         <div class="row">
             <!-- Contenu principal -->
             <main class="col-12 px-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1>Tableau de bord</h1>
+                <!-- Barre de recherche -->
+                <div class="search-bar mb-4 mt-3">
+                    <form method="get" action="{{ path('app_dev_search') }}" class="row g-3 align-items-end">
+                        <div class="col-md">
+                            <label class="form-label">Technologies</label>
+                            <select class="form-select select2" name="competences" multiple>
+                                {% for competence in competences %}
+                                    <option value="{{ competence.id }}">{{ competence.nom }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md">
+                            <label class="form-label">Localisation</label>
+                            <input type="text" class="form-control" name="localisation" placeholder="ex: Paris, Remote">
+                        </div>
+                        <div class="col-md">
+                            <label class="form-label">Salaire minimum</label>
+                            <input type="number" class="form-control" name="salaireMin" min="0">
+                        </div>
+                        <div class="col-md">
+                            <label class="form-label">Niveau d'expérience</label>
+                            <select class="form-select" name="niveauExperience">
+                                <option value="">Tous niveaux</option>
+                                <option value="1">Junior (0-2 ans)</option>
+                                <option value="2">Intermédiaire (3-5 ans)</option>
+                                <option value="3">Senior (5+ ans)</option>
+                            </select>
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search"></i> Rechercher
+                            </button>
+                        </div>
+                    </form>
                 </div>
 
                 <!-- Section Offres Correspondantes -->
@@ -18,7 +50,7 @@
                         {% if matchingFiches|length > 0 %}
                             {% for fiche in matchingFiches %}
                                 <div class="col-md-4 mb-3">
-                                    <div class="card">
+                                    <div class="card h-100">
                                         <div class="card-body">
                                             <div class="match-score position-absolute top-0 end-0 m-2">
                                                 <span class="badge bg-success">
@@ -57,7 +89,7 @@
                         {% if topFiches|length > 0 %}
                             {% for fiche in topFiches %}
                                 <div class="col-md-4 mb-3">
-                                    <div class="card">
+                                    <div class="card h-100">
                                         <div class="card-body">
                                             <h5 class="card-title">{{ fiche.titre }}</h5>
                                             <h6 class="card-subtitle mb-2 text-muted">{{ fiche.entreprise.nom }}</h6>
@@ -78,41 +110,7 @@
                             {% endfor %}
                         {% else %}
                             <div class="col">
-                                <p class="text-muted">Aucune offre populaire pour le moment.</p>
-                            </div>
-                        {% endif %}
-                    </div>
-                </section>
-
-                <!-- Section Dernières Offres -->
-                <section id="dernieres-offres" class="mb-4">
-                    <h2>Dernières Offres</h2>
-                    <div class="row">
-                        {% if latestFiches|length > 0 %}
-                            {% for fiche in latestFiches %}
-                                <div class="col-md-4 mb-3">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <h5 class="card-title">{{ fiche.titre }}</h5>
-                                            <h6 class="card-subtitle mb-2 text-muted">{{ fiche.entreprise.nom }}</h6>
-                                            <p class="card-text">
-                                                <i class="fas fa-map-marker-alt"></i> {{ fiche.localisation }}<br>
-                                                <i class="fas fa-euro-sign"></i> {{ fiche.salaire }}€<br>
-                                                <small class="text-muted">Publié le {{ fiche.dateCreation|date('d/m/Y') }}</small>
-                                            </p>
-                                            <div class="mb-2">
-                                                {% for competence in fiche.competences %}
-                                                    <span class="badge bg-primary me-1">{{ competence.nom }}</span>
-                                                {% endfor %}
-                                            </div>
-                                            <a href="{{ path('app_dev_postuler', {'id': fiche.id}) }}" class="btn btn-outline-primary btn-sm">Postuler</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        {% else %}
-                            <div class="col">
-                                <p class="text-muted">Aucune nouvelle offre pour le moment.</p>
+                                <p class="text-muted">Aucune offre populaire disponible pour le moment.</p>
                             </div>
                         {% endif %}
                     </div>
@@ -124,8 +122,8 @@
 
 {% block stylesheets %}
     {{ parent() }}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
-        /* Styles pour les cartes */
         .card {
             transition: transform 0.2s;
         }
@@ -133,8 +131,23 @@
             transform: translateY(-5px);
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
-        .match-score {
-            z-index: 1;
+        .search-bar {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 0.5rem;
         }
     </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.select2').select2({
+                placeholder: "Sélectionnez les technologies",
+                allowClear: true
+            });
+        });
+    </script>
 {% endblock %}

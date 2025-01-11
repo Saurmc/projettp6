@@ -30,7 +30,7 @@
                         {% if app.user %}
                             {% if is_granted('ROLE_DEV') %}
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ path('dev_dashboard') }}">
+                                    <a class="nav-link" href="{{ path('app_dev_dashboard') }}">
                                         <i class="fas fa-tachometer-alt me-1"></i>Dashboard
                                     </a>
                                 </li>

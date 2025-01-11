@@ -44,6 +44,8 @@ class FicheDePoste
     #[ORM\ManyToMany(targetEntity: Competence::class, inversedBy: 'fichesDePoste')]
     private Collection $competences;
 
+    private ?int $matchScore = null;
+
     public function __construct()
     {
         $this->competences = new ArrayCollection();
@@ -170,5 +172,35 @@ class FicheDePoste
     {
         $this->competences->removeElement($competence);
         return $this;
+    }
+
+    public function calculateMatchScore(Dev $dev): int
+    {
+        if ($this->matchScore !== null) {
+            return $this->matchScore;
+        }
+
+        $devCompetences = $dev->getCompetences();
+        if ($devCompetences->isEmpty() || $this->competences->isEmpty()) {
+            return 0;
+        }
+
+        $matchingCompetences = 0;
+        foreach ($this->competences as $requiredCompetence) {
+            foreach ($devCompetences as $devCompetence) {
+                if ($requiredCompetence->getId() === $devCompetence->getId()) {
+                    $matchingCompetences++;
+                    break;
+                }
+            }
+        }
+
+        $this->matchScore = (int)(($matchingCompetences / $this->competences->count()) * 100);
+        return $this->matchScore;
+    }
+
+    public function getMatchScore(): ?int
+    {
+        return $this->matchScore;
     }
 }

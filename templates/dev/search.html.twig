@@ -1,0 +1,130 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Recherche d'offres{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="row">
+            <main class="col-12 px-4">
+                <!-- Barre de recherche -->
+                <div class="search-bar mb-4 mt-3">
+                    <form method="get" action="{{ path('app_dev_search') }}" class="row g-3 align-items-end">
+                        <div class="col-md">
+                            <label for="competences" class="form-label">Compétences</label>
+                            <select class="form-select select2" id="competences" name="competences" multiple>
+                                {% for competence in competences %}
+                                    <option value="{{ competence.id }}"
+                                        {% if searchParams.competences is defined and competence.id in searchParams.competences|split(',') %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        {{ competence.nom }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md">
+                            <label for="localisation" class="form-label">Localisation</label>
+                            <input type="text" class="form-control" id="localisation" name="localisation"
+                                   value="{{ searchParams.localisation|default('') }}">
+                        </div>
+                        <div class="col-md">
+                            <label for="salaireMin" class="form-label">Salaire minimum</label>
+                            <input type="number" class="form-control" id="salaireMin" name="salaireMin"
+                                   value="{{ searchParams.salaireMin|default('') }}">
+                        </div>
+                        <div class="col-md">
+                            <label for="salaireMax" class="form-label">Salaire maximum</label>
+                            <input type="number" class="form-control" id="salaireMax" name="salaireMax"
+                                   value="{{ searchParams.salaireMax|default('') }}">
+                        </div>
+                        <div class="col-md">
+                            <label for="niveauExperience" class="form-label">Niveau d'expérience</label>
+                            <select class="form-select" id="niveauExperience" name="niveauExperience">
+                                <option value="">Tous</option>
+                                <option value="0" {% if searchParams.niveauExperience == '0' %}selected{% endif %}>Débutant</option>
+                                <option value="1" {% if searchParams.niveauExperience == '1' %}selected{% endif %}>Intermédiaire</option>
+                                <option value="2" {% if searchParams.niveauExperience == '2' %}selected{% endif %}>Expert</option>
+                            </select>
+                        </div>
+                        <div class="col-md-auto">
+                            <button type="submit" class="btn btn-primary">Rechercher</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Résultats de recherche -->
+                <div class="search-results">
+                    <h2>Résultats de recherche</h2>
+                    {% if fiches is empty %}
+                        <div class="alert alert-info">
+                            Aucune offre ne correspond à vos critères de recherche.
+                        </div>
+                    {% else %}
+                        <div class="row">
+                            {% for fiche in fiches %}
+                                <div class="col-md-4 mb-3">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <div class="match-score position-absolute top-0 end-0 m-2">
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-check me-1"></i>{{ fiche.matchScore }}% match
+                                                </span>
+                                            </div>
+                                            <h5 class="card-title">{{ fiche.titre }}</h5>
+                                            <h6 class="card-subtitle mb-2 text-muted">{{ fiche.entreprise.nom }}</h6>
+                                            <p class="card-text">
+                                                <i class="fas fa-map-marker-alt me-2"></i>{{ fiche.localisation }}<br>
+                                                <i class="fas fa-euro-sign me-2"></i>{{ fiche.salaire }}€<br>
+                                                <i class="fas fa-briefcase me-2"></i>
+                                                {% if fiche.niveauExperience == 0 %}
+                                                    Débutant
+                                                {% elseif fiche.niveauExperience == 1 %}
+                                                    Intermédiaire
+                                                {% else %}
+                                                    Expert
+                                                {% endif %}
+                                            </p>
+                                            <div class="competences mb-3">
+                                                {% for competence in fiche.competences %}
+                                                    <span class="badge bg-secondary me-1">{{ competence.nom }}</span>
+                                                {% endfor %}
+                                            </div>
+                                            <a href="#" class="btn btn-primary">Voir l'offre</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </main>
+        </div>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        .select2-container {
+            width: 100% !important;
+        }
+        .match-score {
+            z-index: 1;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.select2').select2({
+                placeholder: 'Sélectionnez des compétences',
+                allowClear: true
+            });
+        });
+    </script>
+{% endblock %}

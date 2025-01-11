@@ -1,0 +1,151 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Recherche de développeurs{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="row">
+            <main class="col-12 px-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1>Recherche de développeurs</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <a href="{{ path('app_entreprise_dashboard') }}" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Retour au tableau de bord
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Barre de recherche -->
+                <div class="search-bar mb-4">
+                    <form method="get" action="{{ path('app_entreprise_search') }}" class="row g-3 align-items-end">
+                        <div class="col-md">
+                            <label class="form-label">Technologies recherchées</label>
+                            <select class="form-select select2" name="competences" multiple>
+                                {% for competence in competences %}
+                                    <option value="{{ competence.id }}"
+                                        {% if searchParams.competences is defined and competence.id in searchParams.competences|split(',') %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        {{ competence.nom }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md">
+                            <label class="form-label">Localisation</label>
+                            <input type="text" class="form-control" name="localisation" 
+                                   value="{{ searchParams.localisation|default('') }}"
+                                   placeholder="ex: Paris, Remote">
+                        </div>
+                        <div class="col-md">
+                            <label class="form-label">Expérience minimale</label>
+                            <select class="form-select" name="experienceMin">
+                                <option value="">Tous niveaux</option>
+                                <option value="1" {% if searchParams.experienceMin == '1' %}selected{% endif %}>Débutant</option>
+                                <option value="2" {% if searchParams.experienceMin == '2' %}selected{% endif %}>Intermédiaire</option>
+                                <option value="3" {% if searchParams.experienceMin == '3' %}selected{% endif %}>Expert</option>
+                            </select>
+                        </div>
+                        <div class="col-md-auto">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search"></i> Rechercher
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Résultats de recherche -->
+                <div class="search-results">
+                    <h2>Résultats de recherche</h2>
+                    {% if devs is empty %}
+                        <div class="alert alert-info">
+                            Aucun développeur ne correspond à vos critères de recherche.
+                        </div>
+                    {% else %}
+                        <div class="row">
+                            {% for dev in devs %}
+                                <div class="col-md-4 mb-3">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div>
+                                                    <h5 class="card-title">{{ dev.prenom }} {{ dev.nom }}</h5>
+                                                    <h6 class="card-subtitle mb-2 text-muted">
+                                                        <i class="fas fa-map-marker-alt me-1"></i>{{ dev.localisation }}
+                                                    </h6>
+                                                </div>
+                                                {% if dev.avatar %}
+                                                    <img src="{{ asset('uploads/avatars/' ~ dev.avatar) }}" 
+                                                         class="rounded-circle" 
+                                                         alt="Avatar" 
+                                                         style="width: 50px; height: 50px; object-fit: cover;">
+                                                {% endif %}
+                                            </div>
+                                            
+                                            <p class="card-text">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-briefcase me-1"></i>
+                                                    {% if dev.niveauExperience == 1 %}
+                                                        Débutant
+                                                    {% elseif dev.niveauExperience == 2 %}
+                                                        Intermédiaire
+                                                    {% else %}
+                                                        Expert
+                                                    {% endif %}
+                                                </small>
+                                            </p>
+
+                                            <div class="competences mb-3">
+                                                {% for competence in dev.competences %}
+                                                    <span class="badge bg-secondary me-1">{{ competence.nom }}</span>
+                                                {% endfor %}
+                                            </div>
+
+                                            <a href="{{ path('dev_profile_show', {'id': dev.id}) }}" 
+                                               class="btn btn-primary btn-sm">
+                                                <i class="fas fa-user"></i> Voir le profil
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </main>
+        </div>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        .select2-container {
+            width: 100% !important;
+        }
+        .card {
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .competences {
+            min-height: 2rem;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.select2').select2({
+                placeholder: 'Sélectionnez des technologies',
+                allowClear: true
+            });
+        });
+    </script>
+{% endblock %}

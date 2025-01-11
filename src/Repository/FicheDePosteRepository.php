@@ -170,4 +170,43 @@ class FicheDePosteRepository extends ServiceEntityRepository
 
         return $totalPoints > 0 ? round(($score / $totalPoints) * 100) : 0;
     }
+
+    /**
+     * Recherche avancée de fiches de poste
+     */
+    public function searchFiches(?array $competences = null, ?string $localisation = null, ?int $salaireMin = null, ?int $salaireMax = null, ?int $niveauExperience = null): array
+    {
+        $qb = $this->createQueryBuilder('f')
+            ->select('f', 'c', 'e')
+            ->leftJoin('f.competences', 'c')
+            ->leftJoin('f.entreprise', 'e')
+            ->orderBy('f.dateCreation', 'DESC');
+
+        if ($competences && !empty($competences)) {
+            $qb->andWhere(':competences MEMBER OF f.competences')
+               ->setParameter('competences', $competences);
+        }
+
+        if ($localisation) {
+            $qb->andWhere('f.localisation LIKE :localisation')
+               ->setParameter('localisation', '%' . $localisation . '%');
+        }
+
+        if ($salaireMin) {
+            $qb->andWhere('f.salaire >= :salaireMin')
+               ->setParameter('salaireMin', $salaireMin);
+        }
+
+        if ($salaireMax) {
+            $qb->andWhere('f.salaire <= :salaireMax')
+               ->setParameter('salaireMax', $salaireMax);
+        }
+
+        if ($niveauExperience) {
+            $qb->andWhere('f.niveauExperience = :niveauExperience')
+               ->setParameter('niveauExperience', $niveauExperience);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 }

@@ -9,6 +9,7 @@ use App\Form\FicheDePosteType;
 use App\Repository\DevRepository;
 use App\Repository\FicheDePosteRepository;
 use App\Repository\CandidatureRepository;
+use App\Repository\CompetenceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,30 +22,61 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 #[IsGranted('ROLE_ENTREPRISE')]
 class EntrepriseDashboardController extends AbstractController
 {
-    #[Route('/dashboard', name: 'entreprise_dashboard')]
-    public function index(FicheDePosteRepository $ficheDePosteRepository, DevRepository $devRepository, CandidatureRepository $candidatureRepository): Response
+    #[Route('/dashboard', name: 'app_entreprise_dashboard')]
+    public function index(
+        Request $request, 
+        DevRepository $devRepository, 
+        CompetenceRepository $competenceRepository,
+        CandidatureRepository $candidatureRepository
+    ): Response
     {
-        /** @var \App\Entity\Entreprise $entreprise */
+        /** @var Entreprise $entreprise */
         $entreprise = $this->getUser();
-        
-        // Récupérer les fiches de poste de l'entreprise
-        $fichesDePoste = $ficheDePosteRepository->findBy(['entreprise' => $entreprise], ['dateCreation' => 'DESC']);
-        
-        // Récupérer les développeurs les plus consultés
-        $topDevs = $devRepository->findMostViewedDevs(5);
-        
-        // Récupérer les 3 derniers profils de développeurs créés
-        $latestDevs = $devRepository->findLatestDevs(3);
 
-        // Récupérer toutes les candidatures pour l'entreprise
+        // Récupérer les développeurs recommandés
+        $recommendedDevs = $devRepository->findRecommendedDevsForEntreprise($entreprise);
+
+        // Récupérer les développeurs les plus actifs
+        $topDevs = $devRepository->findBy([], ['id' => 'DESC'], 6);
+
+        // Récupérer toutes les compétences pour le formulaire de recherche
+        $competences = $competenceRepository->findAll();
+
+        // Récupérer les candidatures pour l'entreprise
         $candidatures = $candidatureRepository->findByEntreprise($entreprise);
+        
+        // Grouper les candidatures par fiche de poste
+        $candidaturesParOffre = [];
+        foreach ($candidatures as $candidature) {
+            $ficheId = $candidature->getFicheDePoste()->getId();
+            if (!isset($candidaturesParOffre[$ficheId])) {
+                $candidaturesParOffre[$ficheId] = [
+                    'fiche' => $candidature->getFicheDePoste(),
+                    'candidatures' => []
+                ];
+            }
+            $candidaturesParOffre[$ficheId]['candidatures'][] = $candidature;
+        }
+
+        // Gérer la recherche si des paramètres sont présents
+        $searchParams = $request->query->all();
+        if (!empty($searchParams)) {
+            $devs = $devRepository->searchDevs(
+                isset($searchParams['competences']) ? explode(',', $searchParams['competences']) : null,
+                $searchParams['localisation'] ?? null,
+                isset($searchParams['experienceMin']) ? (int)$searchParams['experienceMin'] : null
+            );
+            $recommendedDevs = $devs;
+        }
 
         return $this->render('entreprise/dashboard.html.twig', [
             'entreprise' => $entreprise,
-            'fichesDePoste' => $fichesDePoste,
+            'recommendedDevs' => $recommendedDevs,
             'topDevs' => $topDevs,
-            'latestDevs' => $latestDevs,
+            'competences' => $competences,
             'candidatures' => $candidatures,
+            'candidaturesParOffre' => $candidaturesParOffre,
+            'searchParams' => $searchParams ?? []
         ]);
     }
 
@@ -211,6 +243,30 @@ class EntrepriseDashboardController extends AbstractController
         return $this->render('entreprise/dev_profile.html.twig', [
             'dev' => $dev,
             'entreprise' => $this->getUser(),
+        ]);
+    }
+
+    #[Route('/search', name: 'app_entreprise_search')]
+    public function search(Request $request, DevRepository $devRepository, CompetenceRepository $competenceRepository): Response
+    {
+        $competences = $request->query->get('competences');
+        $localisation = $request->query->get('localisation');
+        $experienceMin = $request->query->get('experienceMin');
+
+        $devs = $devRepository->searchDevs(
+            $competences ? explode(',', $competences) : null,
+            $localisation,
+            $experienceMin ? (int)$experienceMin : null
+        );
+
+        return $this->render('entreprise/search.html.twig', [
+            'devs' => $devs,
+            'competences' => $competenceRepository->findAll(),
+            'searchParams' => [
+                'competences' => $competences,
+                'localisation' => $localisation,
+                'experienceMin' => $experienceMin
+            ]
         ]);
     }
 }
