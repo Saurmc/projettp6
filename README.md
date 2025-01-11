@@ -2,6 +2,10 @@
 
 Une plateforme innovante de mise en relation entre développeurs et entreprises. Le projet permet aux développeurs de créer leur profil en mettant en avant leurs compétences techniques, leur expérience et leurs attentes salariales. Les entreprises peuvent publier des offres d'emploi détaillées et rechercher des profils correspondant à leurs besoins. L'application facilite la recherche d'emploi dans le secteur du développement informatique en mettant l'accent sur la correspondance des compétences techniques et des attentes professionnelles.
 
+## Lien vidéo : 
+
+https://drive.google.com/file/d/1-jY6VXSvTIWoes3CIE7sQwpEBF-gzvKX/view?usp=sharing
+
 ## Installation
 
 1. Cloner le projet
